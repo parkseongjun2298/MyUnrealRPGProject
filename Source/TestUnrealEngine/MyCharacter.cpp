@@ -9,7 +9,8 @@
 #include "DrawDebugHelpers.h"
 #include "MyWeapon.h"
 #include "MyStatComponent.h"
-
+#include"Components/WidgetComponent.h"
+#include"MyCharacterWidget.h"
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
@@ -36,6 +37,22 @@ AMyCharacter::AMyCharacter()
 	}
 
 	Stat = CreateDefaultSubobject<UMyStatComponent>(TEXT("STAT"));
+
+	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBAR"));
+	HPBar->SetupAttachment(GetMesh());
+	HPBar->SetRelativeLocation(FVector(0.f,0.f,200.f));
+	HPBar->SetWidgetSpace(EWidgetSpace::Screen);//어디서든 보이는
+
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> UW(TEXT("WidgetBlueprint'/Game/UI/WBP_HPBar.WBP_HPBar_C'"));
+	//블루프린트 링크는 _C를 해야함
+
+	if (UW.Succeeded())
+	{
+		HPBar->SetWidgetClass(UW.Class);
+		HPBar->SetDrawSize(FVector2D(200.f, 50.f));
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -64,6 +81,16 @@ void AMyCharacter::PostInitializeComponents()
 	{
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyCharacter::OnAttackMontageEnded);
 		AnimInstance->OnAttackHit.AddUObject(this, &AMyCharacter::AttackCheck);
+	}
+
+	HPBar->InitWidget();
+
+	//체력깍이는ui여기서
+
+	auto HpWidget = Cast<UMyCharacterWidget>(HPBar->GetUserWidgetObject());
+	if (HpWidget)
+	{
+		HpWidget->BindHP(Stat);
 	}
 }
 
@@ -146,16 +173,16 @@ void AMyCharacter::UpDown(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("UpDown %f"), Value);
 	UpDownValue = Value;
-	//if(!IsMontageChek)
-		//AddMovementInput(GetActorForwardVector(), Value);
+	if(!IsMontageChek)
+		AddMovementInput(GetActorForwardVector(), Value);
 }
 
 void AMyCharacter::LeftRight(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("LeftRight %f"), Value);
 	LeftRightValue = Value;
-	//if (!IsMontageChek)
-		//AddMovementInput(GetActorRightVector(), Value);
+	if (!IsMontageChek)
+		AddMovementInput(GetActorRightVector(), Value);
 }
 
 void AMyCharacter::Yaw(float Value)
