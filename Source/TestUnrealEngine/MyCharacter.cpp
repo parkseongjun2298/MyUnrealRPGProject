@@ -11,6 +11,7 @@
 #include "MyStatComponent.h"
 #include"Components/WidgetComponent.h"
 #include"MyCharacterWidget.h"
+#include"MyAIController.h"
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
@@ -52,6 +53,10 @@ AMyCharacter::AMyCharacter()
 		HPBar->SetWidgetClass(UW.Class);
 		HPBar->SetDrawSize(FVector2D(200.f, 50.f));
 	}
+
+
+	AIControllerClass = AMyAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 }
 
