@@ -199,6 +199,8 @@ void AMyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 {
 	IsAttacking = false;
 	IsMontageChek = false;
+
+	OnAttackEnd.Broadcast();//공격 전파 
 }
 
 float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
