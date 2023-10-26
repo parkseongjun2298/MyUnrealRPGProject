@@ -3,7 +3,7 @@
 
 #include "BTDecorator_CanAttack.h"
 #include"MyAIController.h"
-#include"MyCharacter.h"
+#include"MyPlayer.h"
 #include"BehaviorTree/BlackboardComponent.h"
 
 UBTDecorator_CanAttack::UBTDecorator_CanAttack()
@@ -19,7 +19,7 @@ bool UBTDecorator_CanAttack::CalculateRawConditionValue(UBehaviorTreeComponent& 
 	if (CurPawn == nullptr)
 		return false;
 
-	auto Target=Cast<AMyCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName(TEXT("Target"))));
+	auto Target=Cast<AMyPlayer>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName(TEXT("Target"))));
 	if (Target == nullptr)
 		return false;
 	

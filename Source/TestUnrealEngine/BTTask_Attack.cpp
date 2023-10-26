@@ -3,7 +3,7 @@
 
 #include "BTTask_Attack.h"
 #include"MyAIController.h"
-#include"MyCharacter.h"
+#include"MyPlayer.h"
 #include"BehaviorTree/BlackboardComponent.h"
 
 UBTTask_Attack::UBTTask_Attack()
@@ -15,7 +15,7 @@ UBTTask_Attack::UBTTask_Attack()
 EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
-	auto MyChar=Cast<AMyCharacter>(OwnerComp.GetAIOwner()->GetPawn());
+	auto MyChar=Cast<AMyPlayer>(OwnerComp.GetAIOwner()->GetPawn());
 	if (MyChar == nullptr)
 		return EBTNodeResult::Failed;
 	MyChar->Attack();

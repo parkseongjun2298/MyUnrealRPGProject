@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MyCharacter.h"
+#include "MyPlayer.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "MyAnimInstance.h"
+#include "PlayerAniminstance.h"
 #include "DrawDebugHelpers.h"
 #include "MyWeapon.h"
 #include "MyStatComponent.h"
@@ -13,9 +13,9 @@
 #include"MyCharacterWidget.h"
 #include"MyAIController.h"
 // Sets default values
-AMyCharacter::AMyCharacter()
+AMyPlayer::AMyPlayer()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
@@ -30,7 +30,7 @@ AMyCharacter::AMyCharacter()
 	GetMesh()->SetRelativeLocationAndRotation(
 		FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SM(TEXT("SkeletalMesh'/Game/ParagonGreystone/Characters/Heroes/Greystone/Meshes/Greystone.Greystone'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SM(TEXT("SkeletalMesh'/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_GDC.Kwang_GDC'"));
 
 	if (SM.Succeeded())
 	{
@@ -41,7 +41,7 @@ AMyCharacter::AMyCharacter()
 
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBAR"));
 	HPBar->SetupAttachment(GetMesh());
-	HPBar->SetRelativeLocation(FVector(0.f,0.f,200.f));
+	HPBar->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
 	HPBar->SetWidgetSpace(EWidgetSpace::Screen);//어디서든 보이는
 
 
@@ -59,11 +59,11 @@ AMyCharacter::AMyCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 
-	
+
 }
 
 // Called when the game starts or when spawned
-void AMyCharacter::BeginPlay()
+void AMyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -79,15 +79,15 @@ void AMyCharacter::BeginPlay()
 	}
 }
 
-void AMyCharacter::PostInitializeComponents()
+void AMyPlayer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	AnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
-		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyCharacter::OnAttackMontageEnded);
-		AnimInstance->OnAttackHit.AddUObject(this, &AMyCharacter::AttackCheck);
+		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnAttackMontageEnded);
+		AnimInstance->OnAttackHit.AddUObject(this, &AMyPlayer::AttackCheck);
 	}
 
 	HPBar->InitWidget();
@@ -102,27 +102,27 @@ void AMyCharacter::PostInitializeComponents()
 }
 
 // Called every frame
-void AMyCharacter::Tick(float DeltaTime)
+void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
-void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMyCharacter::Jump);
-	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMyCharacter::Attack);
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMyPlayer::Jump);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMyPlayer::Attack);
 
-	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyCharacter::UpDown);
-	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMyCharacter::LeftRight);
-	PlayerInputComponent->BindAxis(TEXT("Yaw"), this, &AMyCharacter::Yaw);
+	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyPlayer::UpDown);
+	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMyPlayer::LeftRight);
+	PlayerInputComponent->BindAxis(TEXT("Yaw"), this, &AMyPlayer::Yaw);
 }
 
 
-void AMyCharacter::Attack()
+void AMyPlayer::Attack()
 {
 	if (IsAttacking)
 		return;
@@ -130,13 +130,13 @@ void AMyCharacter::Attack()
 	AnimInstance->PlayAttackMontage();
 
 	AnimInstance->JumpToSection(AttackIndex);
-	AttackIndex = (AttackIndex + 1) % 3;
+	AttackIndex = (AttackIndex + 1) % 4;
 
 	IsAttacking = true;
 	IsMontageChek = true;
 }
 
-void AMyCharacter::AttackCheck()
+void AMyPlayer::AttackCheck()
 {
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
@@ -176,15 +176,15 @@ void AMyCharacter::AttackCheck()
 	}
 }
 
-void AMyCharacter::UpDown(float Value)
+void AMyPlayer::UpDown(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("UpDown %f"), Value);
 	UpDownValue = Value;
-	if(!IsMontageChek)
+	if (!IsMontageChek)
 		AddMovementInput(GetActorForwardVector(), Value);
 }
 
-void AMyCharacter::LeftRight(float Value)
+void AMyPlayer::LeftRight(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("LeftRight %f"), Value);
 	LeftRightValue = Value;
@@ -192,12 +192,12 @@ void AMyCharacter::LeftRight(float Value)
 		AddMovementInput(GetActorRightVector(), Value);
 }
 
-void AMyCharacter::Yaw(float Value)
+void AMyPlayer::Yaw(float Value)
 {
 	AddControllerYawInput(Value);
 }
 
-void AMyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+void AMyPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
 	IsMontageChek = false;
@@ -205,7 +205,7 @@ void AMyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 	OnAttackEnd.Broadcast();//공격 전파 
 }
 
-float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+float AMyPlayer::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	Stat->OnAttacked(DamageAmount);
 

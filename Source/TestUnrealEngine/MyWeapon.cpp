@@ -3,7 +3,7 @@
 
 #include "MyWeapon.h"
 #include "Components/BoxComponent.h"
-#include "MyCharacter.h"
+#include "MyPlayer.h"
 
 // Sets default values
 AMyWeapon::AMyWeapon()
@@ -46,7 +46,7 @@ void AMyWeapon::OnCharacterOverlap(UPrimitiveComponent* OverlappedComp, AActor* 
 {
 	UE_LOG(LogTemp, Log, TEXT("Overlapped"));
 
-	AMyCharacter* MyCharacter = Cast<AMyCharacter>(OtherActor);
+	AMyPlayer* MyCharacter = Cast<AMyPlayer>(OtherActor);
 	if (MyCharacter)
 	{
 		FName WeaponSocket(TEXT("hand_l_socket"));

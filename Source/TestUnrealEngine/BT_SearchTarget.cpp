@@ -3,7 +3,7 @@
 
 #include "BT_SearchTarget.h"
 #include"MyAIController.h"
-#include"MyCharacter.h"
+#include"MyPlayer.h"
 #include"BehaviorTree/BlackboardComponent.h"
 #include"DrawDebugHelpers.h"
 UBT_SearchTarget::UBT_SearchTarget()
@@ -26,6 +26,8 @@ void UBT_SearchTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 	if (World == nullptr)
 		return;
 
+	
+
 	TArray <FOverlapResult>overlapresults;
 	FCollisionQueryParams QueryParams(NAME_None, false, CurPawn);
 
@@ -43,7 +45,7 @@ void UBT_SearchTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 	{
 		for (auto& OverlapResult : overlapresults)
 		{
-			AMyCharacter* MyChar = Cast<AMyCharacter>(OverlapResult.GetActor());
+			AMyPlayer* MyChar = Cast<AMyPlayer>(OverlapResult.GetActor());
 			if (MyChar && MyChar->GetController()->IsPlayerController())
 			{
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName(TEXT("Target")), MyChar);
