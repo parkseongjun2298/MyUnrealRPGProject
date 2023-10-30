@@ -44,7 +44,7 @@ void AMyWeapon::PostInitializeComponents()
 
 void AMyWeapon::OnCharacterOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Log, TEXT("Overlapped"));
+	UE_LOG(LogTemp, Log, TEXT("OverlappedItem"));
 
 	AMyPlayer* MyCharacter = Cast<AMyPlayer>(OtherActor);
 	if (MyCharacter)
