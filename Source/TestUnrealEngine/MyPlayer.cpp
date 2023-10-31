@@ -41,7 +41,7 @@ AMyPlayer::AMyPlayer()
 
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBAR"));
 	HPBar->SetupAttachment(GetMesh());
-	HPBar->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
+	HPBar->SetRelativeLocation(FVector(0.f, 0.f, 180.f));
 	HPBar->SetWidgetSpace(EWidgetSpace::Screen);//어디서든 보이는
 
 
@@ -107,6 +107,13 @@ void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (isHit)
+	{
+		FTimerHandle TimerHandle;
+		float Delay = 0.2f; // 2초 후에 제거
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyPlayer::SetHitfalse, Delay);
+	}
+
 }
 
 // Called to bind functionality to input
@@ -120,12 +127,13 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMyPlayer::LeftRight);
 	PlayerInputComponent->BindAxis(TEXT("Yaw"), this, &AMyPlayer::Yaw);
+	PlayerInputComponent->BindAxis(TEXT("Roll"), this, &AMyPlayer::Pitch);
 }
 
 
 void AMyPlayer::Attack()
 {
-	if (IsAttacking)
+	if (IsAttacking || isHit)
 		return;
 
 	AnimInstance->PlayAttackMontage();
@@ -139,6 +147,9 @@ void AMyPlayer::Attack()
 
 void AMyPlayer::AttackCheck()
 {
+	if (isHit)
+		isHit = false;
+
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
@@ -174,6 +185,8 @@ void AMyPlayer::AttackCheck()
 
 		FDamageEvent DamageEvent;
 		HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
+
+		
 	}
 }
 
@@ -198,6 +211,11 @@ void AMyPlayer::Yaw(float Value)
 	AddControllerYawInput(Value);
 }
 
+void AMyPlayer::Pitch(float Value)
+{
+	AddControllerPitchInput(Value);
+}
+
 void AMyPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
@@ -209,6 +227,12 @@ void AMyPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 float AMyPlayer::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	Stat->OnAttacked(DamageAmount);
-
+	isHit = true;
 	return DamageAmount;
+
+}
+
+void AMyPlayer::SetHitfalse()
+{
+	isHit = false;
 }

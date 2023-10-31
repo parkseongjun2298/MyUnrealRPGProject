@@ -106,6 +106,17 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Stat->GetHp() <= 0.f)
+	{
+		Die();
+	}
+
+	if (IsHit)
+	{
+		FTimerHandle TimerHandle;
+		float Delay = 0.2f; // 2초 후에 제거
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyCharacter::SetHitfalse, Delay);
+	}
 }
 
 // Called to bind functionality to input
@@ -124,7 +135,8 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AMyCharacter::Attack()
 {
-	if (IsAttacking)
+
+	if (IsAttacking || IsDie || IsHit)
 		return;
 
 	AnimInstance->PlayAttackMontage();
@@ -207,7 +219,33 @@ void AMyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 
 float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
+	IsHit = true;
 	Stat->OnAttacked(DamageAmount);
-
 	return DamageAmount;
+}
+
+void AMyCharacter::SetHitfalse()
+{
+	IsHit = false;
+}
+
+
+void AMyCharacter::Die()
+{
+
+	IsDie = true;
+	// 몬스터를 비활성화
+	SetActorEnableCollision(false);
+	//SetActorHiddenInGame(true);
+
+	// 특정 시간 후에 몬스터를 제거
+	FTimerHandle TimerHandle;
+	float Delay = 1.0f; // 2초 후에 제거
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyCharacter::DestroyMonster, Delay);
+}
+
+void AMyCharacter::DestroyMonster()
+{
+	// 액터를 제거합니다.
+	Destroy();
 }

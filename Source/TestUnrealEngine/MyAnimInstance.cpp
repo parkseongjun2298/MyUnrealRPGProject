@@ -28,7 +28,8 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (Character)
 		{
 			IsFalling = Character->GetMovementComponent()->IsFalling();
-
+			IsDie = Character->IsDie;
+			IsHit = Character->IsHit;
 			Vertical = Character->UpDownValue;
 			Horizontal = Character->LeftRightValue;
 		}

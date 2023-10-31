@@ -27,7 +27,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (Character)
 		{
 			IsFalling = Character->GetMovementComponent()->IsFalling();
-
+			IsHit = Character->isHit;
 			Vertical = Character->UpDownValue;
 			Horizontal = Character->LeftRightValue;
 		}
