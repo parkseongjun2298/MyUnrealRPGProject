@@ -66,3 +66,10 @@ void UMyStatComponent::SetHp(int32 NewHp)
 	OnHpChanged.Broadcast();
 
 }
+
+void UMyStatComponent::SetSpeed(int32 NewSpeed)
+{
+	Speed = NewSpeed;
+
+
+}

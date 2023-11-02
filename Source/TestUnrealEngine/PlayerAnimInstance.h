@@ -27,6 +27,7 @@ public:
 
 	FName GetAttackMontageName(int32 SectionIndex);
 
+	void PlaySkill_R_Montage();
 private:
 	UFUNCTION()
 		void AnimNotify_AttackHit();
@@ -49,6 +50,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsHit;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* Skill_R_Montage;
 
 public:
 	FOnAttackHit OnAttackHit;

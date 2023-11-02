@@ -12,6 +12,14 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 	{
 		AttackMontage = AM.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> R_M(TEXT("AnimMontage'/Game/Animations/Skill_R_Montage.Skill_R_Montage'"));
+	if (R_M.Succeeded())
+	{
+		Skill_R_Montage = R_M.Object;
+	}
+	
+
 }
 
 void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -49,6 +57,13 @@ FName UPlayerAnimInstance::GetAttackMontageName(int32 SectionIndex)
 {
 	return FName(*FString::Printf(TEXT("Att%d"), SectionIndex));
 }
+
+void UPlayerAnimInstance::PlaySkill_R_Montage()
+{
+	Montage_Play(Skill_R_Montage, 1.f);
+}
+
+
 
 void UPlayerAnimInstance::AnimNotify_AttackHit()
 {

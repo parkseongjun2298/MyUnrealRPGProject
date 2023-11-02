@@ -7,6 +7,8 @@
 #include "MyPlayer.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);
+
+DECLARE_MULTICAST_DELEGATE(FOnSkillREnd);
 UCLASS()
 class TESTUNREALENGINE_API AMyPlayer : public ACharacter
 {
@@ -32,6 +34,7 @@ public:
 	void Attack();
 	void AttackCheck();
 	FOnAttackEnd OnAttackEnd;
+	FOnSkillREnd OnSkill_R_End;
 
 	void UpDown(float Value);
 	void LeftRight(float Value);
@@ -40,9 +43,13 @@ public:
 
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
+	UFUNCTION()
+		void OnSkill_R_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void SetHitfalse();
+
+	void Skill_R();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -54,14 +61,16 @@ private:
 		bool IsAttacking = false;
 
 	UPROPERTY(VisibleAnywhere, Category = Pawn)
-		bool IsMontageChek = false;
+		bool IsMontageCheck = false;
+	UPROPERTY(VisibleAnywhere, Category = Pawn)
+		bool IsSkill_R_MontageCheck = false;
 
 	UPROPERTY()
 		class UPlayerAnimInstance* AnimInstance;
 
 	UPROPERTY()
 		int32 AttackIndex = 0;
-
+	
 public:
 
 	UPROPERTY()
@@ -83,5 +92,6 @@ public:
 	UPROPERTY()
 		bool isHit = false;
 
-
+	UPROPERTY(EditAnywhere)
+		class AFireTonado* FireTonado;
 };

@@ -12,6 +12,8 @@
 #include"Components/WidgetComponent.h"
 #include"MyCharacterWidget.h"
 #include"MyAIController.h"
+
+#include"FireTonado.h"
 // Sets default values
 AMyPlayer::AMyPlayer()
 {
@@ -24,8 +26,17 @@ AMyPlayer::AMyPlayer()
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
-	SpringArm->TargetArmLength = 500.f;
-	SpringArm->SetRelativeRotation(FRotator(-35.f, 0.f, 0.f));
+	SpringArm->TargetArmLength = 450.f;
+	SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
+	SpringArm->bUsePawnControlRotation = true;
+	SpringArm->bInheritPitch = true;
+	SpringArm->bInheritRoll = true;
+	SpringArm->bInheritYaw = true;
+	SpringArm->bDoCollisionTest = true;
+	bUseControllerRotationYaw = false;
+
+	//GetCharacterMovement()->bOrientRotationToMovement=true;
+	//GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 
 	GetMesh()->SetRelativeLocationAndRotation(
 		FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
@@ -55,8 +66,8 @@ AMyPlayer::AMyPlayer()
 	}
 
 
-	AIControllerClass = AMyAIController::StaticClass();
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	//AIControllerClass = AMyAIController::StaticClass();
+	//AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 
 
@@ -89,6 +100,7 @@ void AMyPlayer::PostInitializeComponents()
 	{
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnAttackMontageEnded);
 		AnimInstance->OnAttackHit.AddUObject(this, &AMyPlayer::AttackCheck);
+		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnSkill_R_MontageEnded);
 	}
 
 	HPBar->InitWidget();
@@ -123,6 +135,8 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMyPlayer::Jump);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMyPlayer::Attack);
+	PlayerInputComponent->BindAction(TEXT("Skill_R"), EInputEvent::IE_Pressed, this, &AMyPlayer::Skill_R);
+
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMyPlayer::LeftRight);
@@ -133,7 +147,7 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMyPlayer::Attack()
 {
-	if (IsAttacking || isHit)
+	if (IsAttacking || isHit || IsSkill_R_MontageCheck)
 		return;
 
 	AnimInstance->PlayAttackMontage();
@@ -142,13 +156,13 @@ void AMyPlayer::Attack()
 	AttackIndex = (AttackIndex + 1) % 4;
 
 	IsAttacking = true;
-	IsMontageChek = true;
+	IsMontageCheck = true;
 }
 
 void AMyPlayer::AttackCheck()
 {
-	if (isHit)
-		isHit = false;
+	/*if (isHit)
+		isHit = false;*/
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
@@ -194,16 +208,16 @@ void AMyPlayer::UpDown(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("UpDown %f"), Value);
 	UpDownValue = Value;
-	if (!IsMontageChek)
-		AddMovementInput(GetActorForwardVector(), Value);
+	if (!IsMontageCheck && !IsSkill_R_MontageCheck)
+		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), Value);
 }
 
 void AMyPlayer::LeftRight(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("LeftRight %f"), Value);
 	LeftRightValue = Value;
-	if (!IsMontageChek)
-		AddMovementInput(GetActorRightVector(), Value);
+	if (!IsMontageCheck && !IsSkill_R_MontageCheck)
+		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), Value);
 }
 
 void AMyPlayer::Yaw(float Value)
@@ -219,9 +233,16 @@ void AMyPlayer::Pitch(float Value)
 void AMyPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
-	IsMontageChek = false;
+	IsMontageCheck = false;
 
 	OnAttackEnd.Broadcast();//공격 전파 
+}
+
+void AMyPlayer::OnSkill_R_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+
+	IsSkill_R_MontageCheck = false;
+	OnSkill_R_End.Broadcast();//공격 전파 
 }
 
 float AMyPlayer::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -235,4 +256,16 @@ float AMyPlayer::TakeDamage(float DamageAmount, struct FDamageEvent const& Damag
 void AMyPlayer::SetHitfalse()
 {
 	isHit = false;
+}
+
+void AMyPlayer::Skill_R()
+{
+	AnimInstance->PlaySkill_R_Montage();
+
+	IsSkill_R_MontageCheck = true;
+
+
+
+	auto Fire=GetWorld()->SpawnActor<AFireTonado>(GetActorForwardVector(), FRotator::ZeroRotator);
+	
 }

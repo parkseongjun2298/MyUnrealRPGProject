@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);
+DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);//델리게이트쓰면 F 를 앞에붙여야함
 
 UCLASS()
 class TESTUNREALENGINE_API AMyCharacter : public ACharacter
@@ -55,6 +55,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category=Pawn)
 	bool IsAttacking = false;
+
+	UPROPERTY()
+		bool AttackCoolTime = false;
 
 	UPROPERTY(VisibleAnywhere, Category = Pawn)
 		bool IsMontageChek = false;

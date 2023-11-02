@@ -32,7 +32,8 @@ public:
 	int32 GetMaxHp() { return MaxHp; }
 	float GetRatioHp() { return Hp / (float)MaxHp; }
 	int32 GetAttack() { return Attack; }
-
+	int32 GetSpeed() { return Speed; }
+	void SetSpeed(int32 NewSpeed);
 private:
 	UPROPERTY(EditAnywhere, Category=Stat, Meta=(AllowPrivateAccess=true))
 	int32 Level;
@@ -42,6 +43,8 @@ private:
 		int32 MaxHp;
 	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 Attack;
+	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+		int32 Speed;
 
 public:
 	FOnHpChanged OnHpChanged;
