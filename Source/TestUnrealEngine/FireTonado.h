@@ -32,4 +32,13 @@ public:
 
 	UPROPERTY()
 		bool IsDie = false;
+
+
+public:
+	FVector CurrentLocation;
+	FVector ForwardVector;
+	APlayerController* PlayerController;
+
+	UPROPERTY(VisibleAnywhere)
+		class UMyStatComponent* Stat;
 };

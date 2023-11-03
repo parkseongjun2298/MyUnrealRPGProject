@@ -100,6 +100,7 @@ void AMyPlayer::PostInitializeComponents()
 	{
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnAttackMontageEnded);
 		AnimInstance->OnAttackHit.AddUObject(this, &AMyPlayer::AttackCheck);
+		AnimInstance->OnReadyFireTonado.AddUObject(this, &AMyPlayer::ReadyFireTonado);
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnSkill_R_MontageEnded);
 	}
 
@@ -126,6 +127,8 @@ void AMyPlayer::Tick(float DeltaTime)
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyPlayer::SetHitfalse, Delay);
 	}
 
+
+	//UE_LOG(LogTemp, Warning, TEXT("Player PosX: %f"), GetActorLocation().X);
 }
 
 // Called to bind functionality to input
@@ -204,6 +207,17 @@ void AMyPlayer::AttackCheck()
 	}
 }
 
+void AMyPlayer::ReadyFireTonado()
+{
+	isReadyFireTonado = true;
+
+	if (isReadyFireTonado)
+	{
+		auto Fire = GetWorld()->SpawnActor<AFireTonado>(GetActorLocation(), FRotator::ZeroRotator);
+
+	}
+}
+
 void AMyPlayer::UpDown(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("UpDown %f"), Value);
@@ -243,6 +257,7 @@ void AMyPlayer::OnSkill_R_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
 
 	IsSkill_R_MontageCheck = false;
 	OnSkill_R_End.Broadcast();//공격 전파 
+	isReadyFireTonado = false;
 }
 
 float AMyPlayer::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -264,8 +279,5 @@ void AMyPlayer::Skill_R()
 
 	IsSkill_R_MontageCheck = true;
 
-
-
-	auto Fire=GetWorld()->SpawnActor<AFireTonado>(GetActorForwardVector(), FRotator::ZeroRotator);
 	
 }

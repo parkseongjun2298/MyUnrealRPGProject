@@ -115,7 +115,6 @@ void AMyCharacter::Tick(float DeltaTime)
 	{
 		FTimerHandle TimerHandle;
 		float Delay = 0.2f; // 2초 후에 제거
-		AttackCoolTime = true;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyCharacter::SetHitfalse, Delay);
 	}
 }
@@ -137,7 +136,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void AMyCharacter::Attack()
 {
 
-	if (IsAttacking || IsDie || IsHit || AttackCoolTime)
+	if (IsAttacking || IsDie || IsHit)
 		return;
 
 	AnimInstance->PlayAttackMontage();
@@ -147,7 +146,7 @@ void AMyCharacter::Attack()
 
 	IsAttacking = true;
 	IsMontageChek = true;
-	AttackCoolTime = true;
+	//AttackCoolTime = true;
 }
 
 void AMyCharacter::AttackCheck()

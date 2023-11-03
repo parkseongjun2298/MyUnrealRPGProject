@@ -70,3 +70,8 @@ void UPlayerAnimInstance::AnimNotify_AttackHit()
 	//UE_LOG(LogTemp, Log, TEXT("AnimNotify_AttackHit"));
 	OnAttackHit.Broadcast();
 }
+
+void UPlayerAnimInstance::AnimNotify_ReadyFireTonado()
+{
+	OnReadyFireTonado.Broadcast();
+}

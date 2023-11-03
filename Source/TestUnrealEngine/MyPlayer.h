@@ -33,6 +33,7 @@ public:
 
 	void Attack();
 	void AttackCheck();
+	void ReadyFireTonado();
 	FOnAttackEnd OnAttackEnd;
 	FOnSkillREnd OnSkill_R_End;
 
@@ -94,4 +95,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		class AFireTonado* FireTonado;
+	UPROPERTY()
+		bool isReadyFireTonado = false;
+
 };

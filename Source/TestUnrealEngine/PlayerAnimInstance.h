@@ -9,6 +9,7 @@
 
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackHit);
+DECLARE_MULTICAST_DELEGATE(FOnReadyFireTonado);
 
 /**
  * 
@@ -31,6 +32,8 @@ public:
 private:
 	UFUNCTION()
 		void AnimNotify_AttackHit();
+	UFUNCTION()
+		void AnimNotify_ReadyFireTonado();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
@@ -57,4 +60,5 @@ private:
 
 public:
 	FOnAttackHit OnAttackHit;
+	FOnReadyFireTonado OnReadyFireTonado;
 };
