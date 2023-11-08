@@ -29,6 +29,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	auto Pawn = TryGetPawnOwner();
 	if (IsValid(Pawn))
 	{
+		//플레이어속도
 		Speed = Pawn->GetVelocity().Size();
 
 		auto Character = Cast<AMyPlayer>(Pawn);

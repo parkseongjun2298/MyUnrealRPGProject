@@ -26,17 +26,9 @@ AMyPlayer::AMyPlayer()
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
-	SpringArm->TargetArmLength = 450.f;
-	SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
-	SpringArm->bUsePawnControlRotation = true;
-	SpringArm->bInheritPitch = true;
-	SpringArm->bInheritRoll = true;
-	SpringArm->bInheritYaw = true;
-	SpringArm->bDoCollisionTest = true;
-	bUseControllerRotationYaw = false;
+	SpringArm->TargetArmLength = 650.f;
+	SpringArm->SetRelativeRotation(FRotator(-35.f, 0.f, 0.f));
 
-	//GetCharacterMovement()->bOrientRotationToMovement=true;
-	//GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 
 	GetMesh()->SetRelativeLocationAndRotation(
 		FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
@@ -139,6 +131,7 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMyPlayer::Jump);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMyPlayer::Attack);
 	PlayerInputComponent->BindAction(TEXT("Skill_R"), EInputEvent::IE_Pressed, this, &AMyPlayer::Skill_R);
+	PlayerInputComponent->BindAction(TEXT("Skill_E"), EInputEvent::IE_Pressed, this, &AMyPlayer::Skill_E);
 
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyPlayer::UpDown);
@@ -160,6 +153,9 @@ void AMyPlayer::Attack()
 
 	IsAttacking = true;
 	IsMontageCheck = true;
+	FHitResult HitResult;
+	bool TeleportCheck = false;
+	SetActorLocation(GetActorLocation() + (GetActorForwardVector() * 10.f),true, &HitResult, ETeleportType::None);
 }
 
 void AMyPlayer::AttackCheck()
@@ -280,4 +276,12 @@ void AMyPlayer::Skill_R()
 	IsSkill_R_MontageCheck = true;
 
 	
+}
+
+void AMyPlayer::Skill_E()
+{
+	//look방향으로 이동
+	SetActorLocation(GetActorLocation() + (GetActorForwardVector() * 600.f));
+
+
 }

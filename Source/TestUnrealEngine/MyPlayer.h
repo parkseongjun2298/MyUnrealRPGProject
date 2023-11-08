@@ -50,6 +50,7 @@ public:
 	void SetHitfalse();
 
 	void Skill_R();
+	void Skill_E();
 
 private:
 	UPROPERTY(VisibleAnywhere)
