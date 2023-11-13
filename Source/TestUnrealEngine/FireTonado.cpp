@@ -34,7 +34,7 @@ AFireTonado::AFireTonado()
 	OurParticleSystem->bAutoActivate = true;
 	OurParticleSystem->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_fireStorm.P_ky_fireStorm'"));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_thunderStorm.P_ky_thunderStorm'"));
 	if (ParticleAsset.Succeeded())
 	{
 		OurParticleSystem->SetTemplate(ParticleAsset.Object);

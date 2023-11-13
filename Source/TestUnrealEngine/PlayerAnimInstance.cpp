@@ -19,7 +19,11 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 		Skill_R_Montage = R_M.Object;
 	}
 	
-
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> E_M(TEXT("AnimMontage'/Game/Animations/Skill_E_Montage.Skill_E_Montage'"));
+	if (E_M.Succeeded())
+	{
+		Skill_E_Montage = E_M.Object;
+	}
 }
 
 void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -35,10 +39,13 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		auto Character = Cast<AMyPlayer>(Pawn);
 		if (Character)
 		{
+			//IsAttackMode = Character->isAttackMode;
+			IsEquip = Character->isEquipWeapon;
 			IsFalling = Character->GetMovementComponent()->IsFalling();
 			IsHit = Character->isHit;
 			Vertical = Character->UpDownValue;
 			Horizontal = Character->LeftRightValue;
+			IsShiled = Character->isShiled;
 		}
 	}
 }
@@ -64,6 +71,11 @@ void UPlayerAnimInstance::PlaySkill_R_Montage()
 	Montage_Play(Skill_R_Montage, 1.f);
 }
 
+void UPlayerAnimInstance::PlaySkill_E_Montage()
+{
+	Montage_Play(Skill_E_Montage, 1.f);
+}
+
 
 
 void UPlayerAnimInstance::AnimNotify_AttackHit()
@@ -75,4 +87,9 @@ void UPlayerAnimInstance::AnimNotify_AttackHit()
 void UPlayerAnimInstance::AnimNotify_ReadyFireTonado()
 {
 	OnReadyFireTonado.Broadcast();
+}
+
+void UPlayerAnimInstance::AnimNotify_ReadySkillE()
+{
+	OnReadySkillE.Broadcast();
 }

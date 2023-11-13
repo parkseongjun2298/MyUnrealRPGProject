@@ -10,7 +10,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackHit);
 DECLARE_MULTICAST_DELEGATE(FOnReadyFireTonado);
-
+DECLARE_MULTICAST_DELEGATE(FOnReadySkillE);
 /**
  * 
  */
@@ -29,11 +29,15 @@ public:
 	FName GetAttackMontageName(int32 SectionIndex);
 
 	void PlaySkill_R_Montage();
+	void PlaySkill_E_Montage();
 private:
 	UFUNCTION()
 		void AnimNotify_AttackHit();
 	UFUNCTION()
 		void AnimNotify_ReadyFireTonado();
+	UFUNCTION()
+		void AnimNotify_ReadySkillE();
+
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
@@ -53,12 +57,22 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsHit;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+		bool IsEquip;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+		bool IsAttackMode;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+		bool IsShiled;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* Skill_R_Montage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* Skill_E_Montage;
+
 public:
 	FOnAttackHit OnAttackHit;
 	FOnReadyFireTonado OnReadyFireTonado;
+	FOnReadySkillE OnReadySkillE;
 };

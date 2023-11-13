@@ -90,10 +90,15 @@ void AMyPlayer::PostInitializeComponents()
 	AnimInstance = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
+
+		//애니몽타주에서 노티파이 이벤트연결시킬떄
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnAttackMontageEnded);
 		AnimInstance->OnAttackHit.AddUObject(this, &AMyPlayer::AttackCheck);
 		AnimInstance->OnReadyFireTonado.AddUObject(this, &AMyPlayer::ReadyFireTonado);
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnSkill_R_MontageEnded);
+		AnimInstance->OnReadySkillE.AddUObject(this, &AMyPlayer::ReadySkill_E);
+		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnSkill_E_MontageEnded);
+
 	}
 
 	HPBar->InitWidget();
@@ -132,7 +137,9 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMyPlayer::Attack);
 	PlayerInputComponent->BindAction(TEXT("Skill_R"), EInputEvent::IE_Pressed, this, &AMyPlayer::Skill_R);
 	PlayerInputComponent->BindAction(TEXT("Skill_E"), EInputEvent::IE_Pressed, this, &AMyPlayer::Skill_E);
-
+	PlayerInputComponent->BindAction(TEXT("EquipSword"), EInputEvent::IE_Pressed, this, &AMyPlayer::EquipSword);
+	PlayerInputComponent->BindAction(TEXT("Shiled"), EInputEvent::IE_Pressed, this, &AMyPlayer::Shiled);
+	PlayerInputComponent->BindAction(TEXT("Shiled"), EInputEvent::IE_Released, this, &AMyPlayer::ShiledDown);
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMyPlayer::LeftRight);
@@ -143,19 +150,24 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMyPlayer::Attack()
 {
-	if (IsAttacking || isHit || IsSkill_R_MontageCheck)
-		return;
+	
+	if (/*isAttackMode&&*/isEquipWeapon)
+	{
 
-	AnimInstance->PlayAttackMontage();
+		if (IsAttacking || isHit || IsSkill_R_MontageCheck)
+			return;
 
-	AnimInstance->JumpToSection(AttackIndex);
-	AttackIndex = (AttackIndex + 1) % 4;
+		AnimInstance->PlayAttackMontage();
 
-	IsAttacking = true;
-	IsMontageCheck = true;
-	FHitResult HitResult;
-	bool TeleportCheck = false;
-	SetActorLocation(GetActorLocation() + (GetActorForwardVector() * 10.f),true, &HitResult, ETeleportType::None);
+		AnimInstance->JumpToSection(AttackIndex);
+		AttackIndex = (AttackIndex + 1) % 4;
+
+		IsAttacking = true;
+		IsMontageCheck = true;
+		FHitResult HitResult;
+		bool TeleportCheck = false;
+		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * 10.f), true, &HitResult, ETeleportType::None);
+	}
 }
 
 void AMyPlayer::AttackCheck()
@@ -196,8 +208,11 @@ void AMyPlayer::AttackCheck()
 	{
 		UE_LOG(LogTemp, Log, TEXT("Hit Actor : %s"), *HitResult.Actor->GetName());
 
+
 		FDamageEvent DamageEvent;
-		HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
+		
+		
+			HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
 
 		
 	}
@@ -214,11 +229,17 @@ void AMyPlayer::ReadyFireTonado()
 	}
 }
 
+void AMyPlayer::ReadySkill_E()
+{
+	//look방향으로 이동
+	SetActorLocation(GetActorLocation() + (GetActorForwardVector() * 600.f));
+}
+
 void AMyPlayer::UpDown(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("UpDown %f"), Value);
 	UpDownValue = Value;
-	if (!IsMontageCheck && !IsSkill_R_MontageCheck)
+	if (!IsMontageCheck && !IsSkill_R_MontageCheck && !IsSkill_E_MontageCheck && !isShiled)
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), Value);
 }
 
@@ -226,7 +247,7 @@ void AMyPlayer::LeftRight(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("LeftRight %f"), Value);
 	LeftRightValue = Value;
-	if (!IsMontageCheck && !IsSkill_R_MontageCheck)
+	if (!IsMontageCheck && !IsSkill_R_MontageCheck && !IsSkill_E_MontageCheck && !isShiled)
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), Value);
 }
 
@@ -256,6 +277,11 @@ void AMyPlayer::OnSkill_R_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	isReadyFireTonado = false;
 }
 
+void AMyPlayer::OnSkill_E_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsSkill_E_MontageCheck = false;
+}
+
 float AMyPlayer::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	Stat->OnAttacked(DamageAmount);
@@ -271,17 +297,55 @@ void AMyPlayer::SetHitfalse()
 
 void AMyPlayer::Skill_R()
 {
-	AnimInstance->PlaySkill_R_Montage();
-
-	IsSkill_R_MontageCheck = true;
-
 	
+	if (/*isAttackMode&&*/ isEquipWeapon)
+	{
+		AnimInstance->PlaySkill_R_Montage();
+
+		IsSkill_R_MontageCheck = true;
+
+	}
 }
 
 void AMyPlayer::Skill_E()
 {
-	//look방향으로 이동
-	SetActorLocation(GetActorLocation() + (GetActorForwardVector() * 600.f));
+	
 
+	if (/*isAttackMode&&*/ isEquipWeapon)
+	{
+		AnimInstance->PlaySkill_E_Montage();
 
+		IsSkill_E_MontageCheck = true;
+
+	}
+}
+
+void AMyPlayer::EquipSword()
+{
+
+	iEquipCount += 1;
+	if (iEquipCount % 2 == 1)
+	{
+		isEquipWeapon = true;
+		//isAttackMode = true;
+	}
+	if (iEquipCount % 2 == 0)
+	{
+		isEquipWeapon = false;
+		//isAttackMode = false;
+	}
+
+}
+
+void AMyPlayer::Shiled()
+{
+	isShiled = true;
+	
+	
+
+}
+
+void AMyPlayer::ShiledDown()
+{
+	isShiled = false;
 }

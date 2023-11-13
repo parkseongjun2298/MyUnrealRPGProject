@@ -34,6 +34,7 @@ public:
 	void Attack();
 	void AttackCheck();
 	void ReadyFireTonado();
+	void ReadySkill_E();
 	FOnAttackEnd OnAttackEnd;
 	FOnSkillREnd OnSkill_R_End;
 
@@ -46,12 +47,17 @@ public:
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
 		void OnSkill_R_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+		void OnSkill_E_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void SetHitfalse();
 
 	void Skill_R();
 	void Skill_E();
-
+	void EquipSword();
+	void Shiled();
+	void ShiledDown();
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -66,6 +72,10 @@ private:
 		bool IsMontageCheck = false;
 	UPROPERTY(VisibleAnywhere, Category = Pawn)
 		bool IsSkill_R_MontageCheck = false;
+	UPROPERTY(VisibleAnywhere, Category = Pawn)
+		bool IsSkill_E_MontageCheck = false;
+
+
 
 	UPROPERTY()
 		class UPlayerAnimInstance* AnimInstance;
@@ -93,6 +103,15 @@ public:
 
 	UPROPERTY()
 		bool isHit = false;
+	UPROPERTY()
+		bool isEquipWeapon = false;
+	UPROPERTY()
+		bool isAttackMode = false;
+	UPROPERTY()
+		int32 iEquipCount = 0;
+	UPROPERTY()
+		bool isShiled = false;
+
 
 	UPROPERTY(EditAnywhere)
 		class AFireTonado* FireTonado;

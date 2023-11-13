@@ -67,16 +67,16 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FName WeaponSocket(TEXT("hand_l_socket"));
+	//FName WeaponSocket(TEXT("hand_l_socket"));
 
-	auto CurrentWeapon = GetWorld()->SpawnActor<AMyWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	//auto CurrentWeapon = GetWorld()->SpawnActor<AMyWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 
-	if (CurrentWeapon)
-	{
-		//CurrentWeapon->AttachToComponent(GetMesh(),
-		//	FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-		//	WeaponSocket);
-	}
+	//if (CurrentWeapon)
+	//{
+	//	//CurrentWeapon->AttachToComponent(GetMesh(),
+	//	//	FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+	//	//	WeaponSocket);
+	//}
 }
 
 void AMyCharacter::PostInitializeComponents()
@@ -187,6 +187,8 @@ void AMyCharacter::AttackCheck()
 		FDamageEvent DamageEvent;
 		HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
 	}
+
+	//플레이어가 방어할시 딜감하게 작업하기
 }
 
 void AMyCharacter::UpDown(float Value)
