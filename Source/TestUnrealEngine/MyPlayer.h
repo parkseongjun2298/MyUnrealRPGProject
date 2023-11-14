@@ -58,6 +58,7 @@ public:
 	void EquipSword();
 	void Shiled();
 	void ShiledDown();
+	bool Get_ShiledCheck() { return isShiled; }
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;

@@ -90,4 +90,7 @@ public:
 	UPROPERTY()
 		bool IsHit = false;
 		
+
+	APlayerController* PlayerController;
+
 };
