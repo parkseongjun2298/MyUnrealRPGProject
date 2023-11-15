@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MyCharacter.h"
+#include "MyGunCharacter.h"
 
 #include "Components/CapsuleComponent.h"
 #include "MyAnimInstance.h"
@@ -12,19 +12,20 @@
 #include"MyCharacterWidget.h"
 #include"MyAIController.h"
 #include"MyPlayer.h"
-#include "GameFramework/PlayerController.h" // APlayerController 헤더 파일을 인클루드
 #include "Kismet/GameplayStatics.h" // UGameplayStatics 헤더 파일을 인클루드
 // Sets default values
-AMyCharacter::AMyCharacter()
+AMyGunCharacter::AMyGunCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+
 
 
 	GetMesh()->SetRelativeLocationAndRotation(
 		FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SM(TEXT("SkeletalMesh'/Game/ParagonGreystone/Characters/Heroes/Greystone/Meshes/Greystone.Greystone'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SM(TEXT("SkeletalMesh'/Game/ParagonRevenant/Characters/Heroes/Revenant/Meshes/Revenant.Revenant'"));
 
 	if (SM.Succeeded())
 	{
@@ -35,7 +36,7 @@ AMyCharacter::AMyCharacter()
 
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBAR"));
 	HPBar->SetupAttachment(GetMesh());
-	HPBar->SetRelativeLocation(FVector(0.f,0.f,200.f));
+	HPBar->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
 	HPBar->SetWidgetSpace(EWidgetSpace::Screen);//어디서든 보이는
 
 
@@ -52,12 +53,10 @@ AMyCharacter::AMyCharacter()
 	AIControllerClass = AMyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-
-	
 }
 
 // Called when the game starts or when spawned
-void AMyCharacter::BeginPlay()
+void AMyGunCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -71,17 +70,18 @@ void AMyCharacter::BeginPlay()
 	//	//	FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 	//	//	WeaponSocket);
 	//}
+	
 }
 
-void AMyCharacter::PostInitializeComponents()
+void AMyGunCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
 	AnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
-		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyCharacter::OnAttackMontageEnded);
-		AnimInstance->OnAttackHit.AddUObject(this, &AMyCharacter::AttackCheck);
+		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyGunCharacter::OnAttackMontageEnded);
+		AnimInstance->OnAttackHit.AddUObject(this, &AMyGunCharacter::AttackCheck);
 	}
 
 	HPBar->InitWidget();
@@ -96,7 +96,7 @@ void AMyCharacter::PostInitializeComponents()
 }
 
 // Called every frame
-void AMyCharacter::Tick(float DeltaTime)
+void AMyGunCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -109,22 +109,21 @@ void AMyCharacter::Tick(float DeltaTime)
 	{
 		FTimerHandle TimerHandle;
 		float Delay = 0.2f; // 2초 후에 제거
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyCharacter::SetHitfalse, Delay);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyGunCharacter::SetHitfalse, Delay);
 	}
+
 }
 
 // Called to bind functionality to input
-void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AMyGunCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 	
+
 }
 
-
-void AMyCharacter::Attack()
+void AMyGunCharacter::Attack()
 {
-
 	if (IsAttacking || IsDie || IsHit)
 		return;
 
@@ -135,10 +134,9 @@ void AMyCharacter::Attack()
 
 	IsAttacking = true;
 	IsMontageChek = true;
-	//AttackCoolTime = true;
 }
 
-void AMyCharacter::AttackCheck()
+void AMyGunCharacter::AttackCheck()
 {
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
@@ -169,9 +167,9 @@ void AMyCharacter::AttackCheck()
 		Rotation, DrawColor, false, 2.f);
 
 
-	
 
-	
+
+
 
 
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
@@ -189,12 +187,12 @@ void AMyCharacter::AttackCheck()
 				if (PlayerPawn->Get_ShiledCheck())
 				{
 					//플레이어가 방어할시 딜감하게 작업하기
-					
+
 					HitResult.Actor->TakeDamage(Stat->GetAttack() / 2, DamageEvent, GetController(), this);
 				}
 				else
 				{
-					
+
 					HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
 				}
 
@@ -206,40 +204,10 @@ void AMyCharacter::AttackCheck()
 
 	}
 
-	
-		
-
-		
-	
-
 }
 
-
-
-void AMyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+void AMyGunCharacter::Die()
 {
-	IsAttacking = false;
-	IsMontageChek = false;
-
-	OnAttackEnd.Broadcast();//공격 전파 
-}
-
-float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
-{
-	IsHit = true;
-	Stat->OnAttacked(DamageAmount);
-	return DamageAmount;
-}
-
-void AMyCharacter::SetHitfalse()
-{
-	IsHit = false;
-}
-
-
-void AMyCharacter::Die()
-{
-
 	IsDie = true;
 	// 몬스터를 비활성화
 	SetActorEnableCollision(false);
@@ -248,11 +216,35 @@ void AMyCharacter::Die()
 	// 특정 시간 후에 몬스터를 제거
 	FTimerHandle TimerHandle;
 	float Delay = 1.0f; // 2초 후에 제거
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyCharacter::DestroyMonster, Delay);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyGunCharacter::DestroyMonster, Delay);
 }
 
-void AMyCharacter::DestroyMonster()
+void AMyGunCharacter::DestroyMonster()
 {
 	// 액터를 제거합니다.
 	Destroy();
 }
+
+void AMyGunCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsAttacking = false;
+	IsMontageChek = false;
+
+	OnAttackEnd.Broadcast();//공격 전파 
+
+}
+
+float AMyGunCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	IsHit = true;
+	Stat->OnAttacked(DamageAmount);
+	return DamageAmount;
+
+}
+
+void AMyGunCharacter::SetHitfalse()
+{
+	
+	IsHit = false;
+}
+
