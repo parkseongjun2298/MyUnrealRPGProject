@@ -3,6 +3,7 @@
 
 #include "BTDecorator_CanAttack.h"
 #include"MyAIController.h"
+#include"MyAIGunController.h"
 #include"MyPlayer.h"
 #include"BehaviorTree/BlackboardComponent.h"
 

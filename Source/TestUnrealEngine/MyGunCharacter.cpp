@@ -4,15 +4,17 @@
 #include "MyGunCharacter.h"
 
 #include "Components/CapsuleComponent.h"
-#include "MyAnimInstance.h"
+#include "MyGunCharacterAnimInstance.h"
 #include "DrawDebugHelpers.h"
 #include "MyWeapon.h"
 #include "MyStatComponent.h"
 #include"Components/WidgetComponent.h"
 #include"MyCharacterWidget.h"
-#include"MyAIController.h"
+#include"MyAIGunController.h"
 #include"MyPlayer.h"
 #include "Kismet/GameplayStatics.h" // UGameplayStatics 헤더 파일을 인클루드
+#include"Bullet.h"
+
 // Sets default values
 AMyGunCharacter::AMyGunCharacter()
 {
@@ -50,7 +52,7 @@ AMyGunCharacter::AMyGunCharacter()
 	}
 
 
-	AIControllerClass = AMyAIController::StaticClass();
+	AIControllerClass = AMyAIGunController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 }
@@ -77,7 +79,7 @@ void AMyGunCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	AnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance = Cast<UMyGunCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyGunCharacter::OnAttackMontageEnded);
@@ -129,6 +131,15 @@ void AMyGunCharacter::Attack()
 
 	AnimInstance->PlayAttackMontage();
 
+	auto Bullet = GetWorld()->SpawnActor<ABullet>(GetActorLocation()+GetActorForwardVector()*100.f, FRotator::ZeroRotator);
+	if (Bullet)
+	{
+		// 방향 벡터 전달
+		FVector DirectionVector = GetActorForwardVector();
+		FRotator Rot = GetActorRotation();
+		Bullet->InitializeWithDirection(DirectionVector, Rot);
+	}
+
 	AnimInstance->JumpToSection(AttackIndex);
 	AttackIndex = (AttackIndex + 1) % 3;
 
@@ -138,71 +149,7 @@ void AMyGunCharacter::Attack()
 
 void AMyGunCharacter::AttackCheck()
 {
-	FHitResult HitResult;
-	FCollisionQueryParams Params(NAME_None, false, this);
-
-	float AttackRange = 100.f;
-	float AttackRadius = 50.f;
-
-	bool bResult = GetWorld()->SweepSingleByChannel(
-		OUT HitResult,
-		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackRange,
-		FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel2,
-		FCollisionShape::MakeSphere(AttackRadius),
-		Params);
-
-	FVector Vec = GetActorForwardVector() * AttackRange;
-	FVector Center = GetActorLocation() + Vec * 0.5f;
-	float HalfHeight = AttackRange * 0.5f + AttackRadius;
-	FQuat Rotation = FRotationMatrix::MakeFromZ(Vec).ToQuat();
-	FColor DrawColor;
-	if (bResult)
-		DrawColor = FColor::Green;
-	else
-		DrawColor = FColor::Red;
-
-	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius,
-		Rotation, DrawColor, false, 2.f);
-
-
-
-
-
-
-
-	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
-
-
-	if (bResult && HitResult.Actor.IsValid())
-	{
-
-		if (PlayerController)
-		{
-			AMyPlayer* PlayerPawn = dynamic_cast<AMyPlayer*>(PlayerController->GetPawn()); // 플레이어 캐릭터를 얻음
-			if (PlayerPawn)
-			{
-				FDamageEvent DamageEvent;
-				if (PlayerPawn->Get_ShiledCheck())
-				{
-					//플레이어가 방어할시 딜감하게 작업하기
-
-					HitResult.Actor->TakeDamage(Stat->GetAttack() / 2, DamageEvent, GetController(), this);
-				}
-				else
-				{
-
-					HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
-				}
-
-
-
-			}
-
-		}
-
-	}
+	
 
 }
 
@@ -247,4 +194,6 @@ void AMyGunCharacter::SetHitfalse()
 	
 	IsHit = false;
 }
+
+
 

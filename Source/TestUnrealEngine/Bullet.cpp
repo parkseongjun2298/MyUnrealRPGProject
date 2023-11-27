@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "FireTonado.h"
+#include "Bullet.h"
+#include"MyGunCharacter.h"
 #include "Engine/Classes/Particles/ParticleSystemComponent.h"
-#include"MyPlayer.h"
 #include "GameFramework/PlayerController.h" // APlayerController 헤더 파일을 인클루드
 #include "Kismet/GameplayStatics.h" // UGameplayStatics 헤더 파일을 인클루드
 #include "DrawDebugHelpers.h"
@@ -11,83 +11,61 @@
 #include "MyStatComponent.h"
 
 // Sets default values
-AFireTonado::AFireTonado()
+ABullet::ABullet()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-
-
 	PrimaryActorTick.bCanEverTick = true;
 
 	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WEAPON"));
-	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SW(TEXT("StaticMesh'/Game/ParagonGreystone/FX/Meshes/Heroes/Greystone/SM_Greystone_Blade_01.SM_Greystone_Blade_01'"));
 	if (SW.Succeeded())
 	{
 		Weapon->SetStaticMesh(SW.Object);
 	}
 
+	Weapon->SetWorldRotation(FRot);
 	Weapon->SetupAttachment(RootComponent);
-	
-	Weapon->SetCollisionProfileName(TEXT("PlayerSkill"));
+	//Weapon->SetCollisionProfileName(TEXT("Attack"));
 
 	OurParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MovementParticles"));
 	OurParticleSystem->SetupAttachment(Weapon);
 	OurParticleSystem->bAutoActivate = true;
 	OurParticleSystem->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_thunderStorm.P_ky_thunderStorm'"));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("ParticleSystem'/Game/ParagonRevenant/FX/Particles/Revenant/Abilities/Mark/FX/P_Revenant_Mark_Trail.P_Revenant_Mark_Trail'"));
 	if (ParticleAsset.Succeeded())
 	{
 		OurParticleSystem->SetTemplate(ParticleAsset.Object);
 	}
+	OurParticleSystem->SetWorldRotation(FRot);
 
-	 PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
-	if (PlayerController)
-	{
-		APawn* PlayerPawn = PlayerController->GetPawn(); // 플레이어 캐릭터를 얻음
-		if (PlayerPawn)
-		{
-			ForwardVector = PlayerPawn->GetActorForwardVector();
-			// 이제 PlayerForwardVector를 사용하여 작업 수행
-		}
-	}
 
 }
 
-
-void AFireTonado::DestroyOBJ()
+void ABullet::DestroyOBJ()
 {
 	Destroy();
 }
 
 // Called when the game starts or when spawned
-void AFireTonado::BeginPlay()
+void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
-	//UE_LOG(LogTemp, Log, TEXT("Create FireTonado"));
-	
 	// 특정 시간 후에 몬스터를 제거
 	FTimerHandle TimerHandle;
-	float Delay = 4.0f;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AFireTonado::DestroyOBJ, Delay);
-
-
-
-
+	float Delay = 3.0f;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABullet::DestroyOBJ, Delay);
 	
-
 }
 
 // Called every frame
-void AFireTonado::Tick(float DeltaTime)
+void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	CurrentLocation = GetActorLocation();
 
-	
-	 CurrentLocation = GetActorLocation();
-	
-	float Speed = 200.0f; // 움직이는 속도 조절
+	float Speed = 600.0f; // 움직이는 속도 조절
 	FVector NewLocation = CurrentLocation + (ForwardVector * Speed * DeltaTime);
 
 	SetActorLocation(NewLocation);
@@ -96,8 +74,8 @@ void AFireTonado::Tick(float DeltaTime)
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	float AttackRange = 100.f;
-	float AttackRadius = 100.f;
+	float AttackRange = 50.f;
+	float AttackRadius = 50.f;
 
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		OUT HitResult,
@@ -113,14 +91,19 @@ void AFireTonado::Tick(float DeltaTime)
 
 	if (bResult && HitResult.Actor.IsValid())
 	{
-		UE_LOG(LogTemp, Log, TEXT("FireTonado Hit Actor : %s"), *HitResult.Actor->GetName());
+		UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
 
-		FDamageEvent DamageEvent;
+		/*FDamageEvent DamageEvent;
 
-		HitResult.Actor->TakeDamage(0.5f, DamageEvent, PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0) , this);
+		HitResult.Actor->TakeDamage(0.5f, DamageEvent, PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0), this);*/
 
 
 	}
+}
 
+void ABullet::InitializeWithDirection(const FVector& DirectionVector,const FRotator& Rot)
+{
+	ForwardVector = DirectionVector;
+	FRot = Rot;
 }
 

@@ -43,6 +43,7 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void SetHitfalse();
 
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -60,7 +61,7 @@ private:
 		bool IsMontageChek = false;
 
 	UPROPERTY()
-		class UMyAnimInstance* AnimInstance;
+		class UMyGunCharacterAnimInstance* AnimInstance;
 
 	UPROPERTY()
 		int32 AttackIndex = 0;

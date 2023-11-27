@@ -3,6 +3,7 @@
 
 #include "BT_SearchTarget.h"
 #include"MyAIController.h"
+#include"MyAIGunController.h"
 #include"MyPlayer.h"
 #include"BehaviorTree/BlackboardComponent.h"
 #include"DrawDebugHelpers.h"
