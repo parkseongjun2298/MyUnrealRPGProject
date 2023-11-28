@@ -25,6 +25,7 @@ AFireTonado::AFireTonado()
 	{
 		Weapon->SetStaticMesh(SW.Object);
 	}
+	RootComponent = Weapon;
 
 	Weapon->SetupAttachment(RootComponent);
 	

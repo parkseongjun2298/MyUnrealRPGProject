@@ -131,7 +131,7 @@ void AMyGunCharacter::Attack()
 
 	AnimInstance->PlayAttackMontage();
 
-	auto Bullet = GetWorld()->SpawnActor<ABullet>(GetActorLocation()+GetActorForwardVector()*100.f, FRotator::ZeroRotator);
+	auto Bullet = GetWorld()->SpawnActor<ABullet>(GetActorLocation()+GetActorForwardVector()*100.f+GetActorUpVector()*100.f, FRotator::ZeroRotator);
 	if (Bullet)
 	{
 		// 방향 벡터 전달

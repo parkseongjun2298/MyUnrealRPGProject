@@ -17,27 +17,17 @@ ABullet::ABullet()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WEAPON"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SW(TEXT("StaticMesh'/Game/ParagonGreystone/FX/Meshes/Heroes/Greystone/SM_Greystone_Blade_01.SM_Greystone_Blade_01'"));
+	RootComponent = Weapon;
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SW(TEXT("StaticMesh'/Game/ParagonRevenant/FX/Meshes/Shapes/SM_Burden_Projectile.SM_Burden_Projectile'"));
 	if (SW.Succeeded())
 	{
 		Weapon->SetStaticMesh(SW.Object);
 	}
 
-	Weapon->SetWorldRotation(FRot);
+	
 	Weapon->SetupAttachment(RootComponent);
 	//Weapon->SetCollisionProfileName(TEXT("Attack"));
-
-	OurParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MovementParticles"));
-	OurParticleSystem->SetupAttachment(Weapon);
-	OurParticleSystem->bAutoActivate = true;
-	OurParticleSystem->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("ParticleSystem'/Game/ParagonRevenant/FX/Particles/Revenant/Abilities/Mark/FX/P_Revenant_Mark_Trail.P_Revenant_Mark_Trail'"));
-	if (ParticleAsset.Succeeded())
-	{
-		OurParticleSystem->SetTemplate(ParticleAsset.Object);
-	}
-	OurParticleSystem->SetWorldRotation(FRot);
+	
 
 
 }
@@ -51,9 +41,13 @@ void ABullet::DestroyOBJ()
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FVector NewScale = FVector(0.5f, 0.5f, 0.5f);
+	Weapon->SetWorldScale3D(NewScale);
+
 	// 특정 시간 후에 몬스터를 제거
 	FTimerHandle TimerHandle;
-	float Delay = 3.0f;
+	float Delay = 2.0f;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABullet::DestroyOBJ, Delay);
 	
 }
@@ -65,6 +59,8 @@ void ABullet::Tick(float DeltaTime)
 
 	CurrentLocation = GetActorLocation();
 
+	Weapon->SetWorldRotation(FRot);
+	
 	float Speed = 600.0f; // 움직이는 속도 조절
 	FVector NewLocation = CurrentLocation + (ForwardVector * Speed * DeltaTime);
 
@@ -74,8 +70,8 @@ void ABullet::Tick(float DeltaTime)
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	float AttackRange = 50.f;
-	float AttackRadius = 50.f;
+	float AttackRange = 100.f;
+	float AttackRadius = 100.f;
 
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		OUT HitResult,
