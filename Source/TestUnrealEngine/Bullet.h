@@ -35,7 +35,7 @@ public:
 	UPROPERTY()
 		bool IsDie = false;
 
-	public:
+public:
 	FVector CurrentLocation;
 	FVector ForwardVector;
 	FRotator FRot;
@@ -44,6 +44,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UMyStatComponent* Stat;
 
-	void InitializeWithDirection(const FVector& DirectionVector, const FRotator& Rot);
+	void InitializeWithDirection(const FVector& DirectionVector, const FRotator& Rot,class AMyGunCharacter* Character);
+
+	/*UPROPERTY()
+	class AMyGunCharacter* MyGunChar=nullptr;*/
+
 
 };

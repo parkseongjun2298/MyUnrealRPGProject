@@ -9,6 +9,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "MyStatComponent.h"
+#include"MyPlayer.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -16,7 +17,7 @@ ABullet::ABullet()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WEAPON"));
+	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet"));
 	RootComponent = Weapon;
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SW(TEXT("StaticMesh'/Game/ParagonRevenant/FX/Meshes/Shapes/SM_Burden_Projectile.SM_Burden_Projectile'"));
 	if (SW.Succeeded())
@@ -61,7 +62,7 @@ void ABullet::Tick(float DeltaTime)
 
 	Weapon->SetWorldRotation(FRot);
 	
-	float Speed = 600.0f; // 움직이는 속도 조절
+	float Speed = 800.0f; // 움직이는 속도 조절
 	FVector NewLocation = CurrentLocation + (ForwardVector * Speed * DeltaTime);
 
 	SetActorLocation(NewLocation);
@@ -70,36 +71,61 @@ void ABullet::Tick(float DeltaTime)
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	float AttackRange = 100.f;
-	float AttackRadius = 100.f;
+	float AttackRange = 30.f;
+	float AttackRadius = 30.f;
 
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		OUT HitResult,
 		GetActorLocation(),
 		GetActorLocation() + GetActorForwardVector() * AttackRange,
 		FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel5,
+		ECollisionChannel::ECC_GameTraceChannel6,
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
 
 
 
+	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
+
+
 	if (bResult && HitResult.Actor.IsValid())
 	{
-		UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
+	
+		if (PlayerController)
+		{
+			AMyPlayer* PlayerPawn = dynamic_cast<AMyPlayer*>(PlayerController->GetPawn()); // 플레이어 캐릭터를 얻음
+			if (PlayerPawn)
+			{
+				FDamageEvent DamageEvent;
+				if (PlayerPawn->Get_ShiledCheck())
+				{
+					UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
+					//플레이어가 방어할시 딜감하게 작업하기
 
-		/*FDamageEvent DamageEvent;
+					//HitResult.Actor->TakeDamage(Stat->GetAttack() / 2, DamageEvent, EventInstigator, this);
+					DestroyOBJ();
+				}
+				else
+				{
+					UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
+					//HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, MyGunChar->GetController(), this);
+					DestroyOBJ();
+				}
 
-		HitResult.Actor->TakeDamage(0.5f, DamageEvent, PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0), this);*/
 
+
+			}
+
+		}
 
 	}
 }
 
-void ABullet::InitializeWithDirection(const FVector& DirectionVector,const FRotator& Rot)
+void ABullet::InitializeWithDirection(const FVector& DirectionVector,const FRotator& Rot,class AMyGunCharacter* Character)
 {
 	ForwardVector = DirectionVector;
 	FRot = Rot;
+	//MyGunChar=Character;
 }
 

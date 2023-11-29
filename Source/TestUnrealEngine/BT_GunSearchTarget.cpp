@@ -1,18 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BT_SearchTarget.h"
-#include"MyAIController.h"
+#include "BT_GunSearchTarget.h"
+#include"MyAIGunController.h"
 #include"MyPlayer.h"
 #include"BehaviorTree/BlackboardComponent.h"
 #include"DrawDebugHelpers.h"
-UBT_SearchTarget::UBT_SearchTarget()
+
+UBT_GunSearchTarget::UBT_GunSearchTarget()
 {
-	NodeName = TEXT("SearchTarget");
+	NodeName = TEXT("SearchGunTarget");
 	Interval = 1.f;
 }
 
-void UBT_SearchTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void UBT_GunSearchTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
@@ -21,12 +22,12 @@ void UBT_SearchTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 		return;
 	UWorld* World = CurPawn->GetWorld();
 	FVector Center = CurPawn->GetActorLocation();
-	float SearchRadius = 500.f;
+	float SearchRadius = 1000.f;
 
 	if (World == nullptr)
 		return;
 
-	
+
 
 	TArray <FOverlapResult>overlapresults;
 	FCollisionQueryParams QueryParams(NAME_None, false, CurPawn);
@@ -63,7 +64,5 @@ void UBT_SearchTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 
 		DrawDebugSphere(World, Center, SearchRadius, 16, FColor::Red, false, 0.2f);
 	}
-
-
 
 }

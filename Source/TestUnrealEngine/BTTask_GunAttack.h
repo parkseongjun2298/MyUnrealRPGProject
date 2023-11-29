@@ -20,4 +20,5 @@ public:
 
 private:
 	bool bIsAttacking = false;
+	FVector TargetPos;
 };
