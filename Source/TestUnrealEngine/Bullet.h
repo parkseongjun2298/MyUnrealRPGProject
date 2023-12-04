@@ -41,13 +41,10 @@ public:
 	FRotator FRot;
 	APlayerController* PlayerController;
 
-	UPROPERTY(VisibleAnywhere)
-		class UMyStatComponent* Stat;
 
-	void InitializeWithDirection(const FVector& DirectionVector, const FRotator& Rot,class AMyGunCharacter* Character);
-
-	/*UPROPERTY()
-	class AMyGunCharacter* MyGunChar=nullptr;*/
+	void InitializeWithDirection(const FVector& DirectionVector, const FRotator& Rot, AController* Controler);
 
 
+	AController* Control;
+	
 };

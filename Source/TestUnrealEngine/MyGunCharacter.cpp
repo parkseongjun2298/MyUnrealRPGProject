@@ -137,7 +137,8 @@ void AMyGunCharacter::Attack()
 		// 방향 벡터 전달
 		FVector DirectionVector = GetActorForwardVector();
 		FRotator Rot = GetActorRotation();
-		Bullet->InitializeWithDirection(DirectionVector, Rot,this);
+		Bullet->InitializeWithDirection(DirectionVector, Rot, GetController());
+		
 	}
 
 	AnimInstance->JumpToSection(AttackIndex);
@@ -149,7 +150,7 @@ void AMyGunCharacter::Attack()
 
 void AMyGunCharacter::AttackCheck()
 {
-	
+	UE_LOG(LogTemp, Log, TEXT("ColCheck :"));
 
 }
 

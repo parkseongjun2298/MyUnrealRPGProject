@@ -44,7 +44,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 Attack;
 	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
-		int32 Speed;
+	int32 Speed;
 
 public:
 	FOnHpChanged OnHpChanged;

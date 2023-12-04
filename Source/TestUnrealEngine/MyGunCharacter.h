@@ -43,6 +43,7 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void SetHitfalse();
 
+	void SetBulletColCheck() { isBulletColCheck = true; }
 	
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -87,7 +88,8 @@ public:
 		bool IsDie = false;
 	UPROPERTY()
 		bool IsHit = false;
-
+	UPROPERTY()
+		bool isBulletColCheck = false;
 
 	APlayerController* PlayerController;
 

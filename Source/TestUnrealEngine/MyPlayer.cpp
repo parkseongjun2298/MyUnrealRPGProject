@@ -125,7 +125,21 @@ void AMyPlayer::Tick(float DeltaTime)
 	}
 
 
-	//UE_LOG(LogTemp, Warning, TEXT("Player PosX: %f"), GetActorLocation().X);
+
+	FVector ForwardVector = GetActorForwardVector();
+	FVector RightVector = GetActorRightVector();
+	FVector NewLocation = GetActorLocation();
+
+	// Move forward
+	NewLocation += ForwardVector * Stat->GetSpeed() * InputComponent->GetAxisValue("UpDown") * DeltaTime;
+
+	// Move right
+	NewLocation += RightVector * Stat->GetSpeed() * InputComponent->GetAxisValue("LeftRight") * DeltaTime;
+
+	// Set the new location
+	SetActorLocation(NewLocation);
+
+
 }
 
 // Called to bind functionality to input
@@ -140,6 +154,9 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("EquipSword"), EInputEvent::IE_Pressed, this, &AMyPlayer::EquipSword);
 	PlayerInputComponent->BindAction(TEXT("Shiled"), EInputEvent::IE_Pressed, this, &AMyPlayer::Shiled);
 	PlayerInputComponent->BindAction(TEXT("Shiled"), EInputEvent::IE_Released, this, &AMyPlayer::ShiledDown);
+	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &AMyPlayer::Run);
+	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &AMyPlayer::RunFin);
+
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMyPlayer::LeftRight);
@@ -238,6 +255,7 @@ void AMyPlayer::ReadySkill_E()
 void AMyPlayer::UpDown(float Value)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("UpDown %f"), Value);
+
 	UpDownValue = Value;
 	if (!IsMontageCheck && !IsSkill_R_MontageCheck && !IsSkill_E_MontageCheck && !isShiled)
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), Value);
@@ -348,4 +366,15 @@ void AMyPlayer::Shiled()
 void AMyPlayer::ShiledDown()
 {
 	isShiled = false;
+}
+
+void AMyPlayer::Run()
+{
+	Stat->SetSpeed(400);
+
+}
+
+void AMyPlayer::RunFin()
+{
+	Stat->SetSpeed(1);
 }

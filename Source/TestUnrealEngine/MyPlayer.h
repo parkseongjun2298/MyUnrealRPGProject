@@ -59,6 +59,9 @@ public:
 	void Shiled();
 	void ShiledDown();
 	bool Get_ShiledCheck() { return isShiled; }
+	void Run();
+	void RunFin();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;

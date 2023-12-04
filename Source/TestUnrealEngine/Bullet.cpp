@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ // Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Bullet.h"
@@ -61,7 +61,7 @@ void ABullet::Tick(float DeltaTime)
 	CurrentLocation = GetActorLocation();
 
 	Weapon->SetWorldRotation(FRot);
-	
+
 	float Speed = 800.0f; // 움직이는 속도 조절
 	FVector NewLocation = CurrentLocation + (ForwardVector * Speed * DeltaTime);
 
@@ -91,7 +91,7 @@ void ABullet::Tick(float DeltaTime)
 
 	if (bResult && HitResult.Actor.IsValid())
 	{
-	
+
 		if (PlayerController)
 		{
 			AMyPlayer* PlayerPawn = dynamic_cast<AMyPlayer*>(PlayerController->GetPawn()); // 플레이어 캐릭터를 얻음
@@ -100,16 +100,23 @@ void ABullet::Tick(float DeltaTime)
 				FDamageEvent DamageEvent;
 				if (PlayerPawn->Get_ShiledCheck())
 				{
-					UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
+					//UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
 					//플레이어가 방어할시 딜감하게 작업하기
 
-					//HitResult.Actor->TakeDamage(Stat->GetAttack() / 2, DamageEvent, EventInstigator, this);
+
+					HitResult.Actor->TakeDamage(10 / 2, DamageEvent, Control, this);
+
 					DestroyOBJ();
 				}
+
+
+
 				else
 				{
-					UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
-					//HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, MyGunChar->GetController(), this);
+					//UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
+
+					HitResult.Actor->TakeDamage(10, DamageEvent, Control, this);
+
 					DestroyOBJ();
 				}
 
@@ -119,13 +126,15 @@ void ABullet::Tick(float DeltaTime)
 
 		}
 
+
 	}
 }
 
-void ABullet::InitializeWithDirection(const FVector& DirectionVector,const FRotator& Rot,class AMyGunCharacter* Character)
+void ABullet::InitializeWithDirection(const FVector& DirectionVector,const FRotator& Rot,AController* Controler)
 {
 	ForwardVector = DirectionVector;
-	FRot = Rot;
-	//MyGunChar=Character;
+	FRot = Rot; 
+	Control = Controler;
+	
 }
 
