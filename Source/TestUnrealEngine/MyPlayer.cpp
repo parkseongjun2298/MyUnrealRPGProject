@@ -124,6 +124,16 @@ void AMyPlayer::Tick(float DeltaTime)
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyPlayer::SetHitfalse, Delay);
 	}
 
+	if (isOnBuff)
+	{
+		BuffTime += DeltaTime;
+
+		if (BuffTime >= 10.f)
+		{
+			isOnBuff = false;
+		}
+
+	}
 
 
 	FVector ForwardVector = GetActorForwardVector();
@@ -156,6 +166,7 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Shiled"), EInputEvent::IE_Released, this, &AMyPlayer::ShiledDown);
 	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &AMyPlayer::Run);
 	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &AMyPlayer::RunFin);
+	PlayerInputComponent->BindAction(TEXT("Buff"), EInputEvent::IE_Pressed, this, &AMyPlayer::Buff);
 
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyPlayer::UpDown);
@@ -183,8 +194,15 @@ void AMyPlayer::Attack()
 		IsMontageCheck = true;
 		FHitResult HitResult;
 		bool TeleportCheck = false;
-		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * 10.f), true, &HitResult, ETeleportType::None);
+		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * 50.f), true, &HitResult, ETeleportType::None);
 	}
+
+
+	if (isOnBuff)
+	{
+		//발사하는 거 소환여기서
+	}
+
 }
 
 void AMyPlayer::AttackCheck()
@@ -232,6 +250,11 @@ void AMyPlayer::AttackCheck()
 			HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
 
 		
+
+
+
+
+
 	}
 }
 
@@ -377,4 +400,9 @@ void AMyPlayer::Run()
 void AMyPlayer::RunFin()
 {
 	Stat->SetSpeed(1);
+}
+
+void AMyPlayer::Buff()
+{
+	isOnBuff = true;
 }

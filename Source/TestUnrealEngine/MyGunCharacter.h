@@ -44,7 +44,7 @@ public:
 	void SetHitfalse();
 
 	void SetBulletColCheck() { isBulletColCheck = true; }
-	
+	bool GetIsHit() { return IsHit; }
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;

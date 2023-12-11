@@ -61,6 +61,7 @@ public:
 	bool Get_ShiledCheck() { return isShiled; }
 	void Run();
 	void RunFin();
+	void Buff();
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -115,6 +116,12 @@ public:
 		int32 iEquipCount = 0;
 	UPROPERTY()
 		bool isShiled = false;
+
+	UPROPERTY()
+		bool isOnBuff = false;
+
+	UPROPERTY()
+		float BuffTime = 0.f;
 
 
 	UPROPERTY(EditAnywhere)
