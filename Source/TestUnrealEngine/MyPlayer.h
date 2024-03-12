@@ -105,6 +105,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UWidgetComponent* HPBar;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		TSubclassOf<class UHUDWidget> HUDWidgetClass;
+		
 
 	UPROPERTY()
 		bool isHit = false;
@@ -128,5 +131,10 @@ public:
 		class AFireTonado* FireTonado;
 	UPROPERTY()
 		bool isReadyFireTonado = false;
+
+private:
+
+		UPROPERTY(VisibleAnywhere)
+		class UHUDWidget* HUDWidget;
 
 };

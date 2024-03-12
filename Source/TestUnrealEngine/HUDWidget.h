@@ -14,4 +14,20 @@ class TESTUNREALENGINE_API UHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	void BindCharacterStat(class UMyStatComponent* CharStat);
+	
+protected:
+	virtual void NativeConstruct() override;
+	void UpdateCharacterStat();
+	
+
+private:
+	TWeakObjectPtr<class UMyStatComponent> CurrentCharStat;
+	UPROPERTY()
+		class UProgressBar* HpBar;
+	UPROPERTY()
+		class UProgressBar* MpBar;
+
+
 };

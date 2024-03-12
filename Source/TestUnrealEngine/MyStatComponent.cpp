@@ -45,6 +45,8 @@ void UMyStatComponent::SetLevel(int32 NewLevel)
 			Level = StatData->Level;
 			SetHp(StatData->MaxHp);//ui랑 관련댄거면 이렇게 함수로 관리하는게 ui랑연동더오류없이댐
 			MaxHp = StatData->MaxHp;
+			//SetMp(StatData->MaxMp);//ui랑 관련댄거면 이렇게 함수로 관리하는게 ui랑연동더오류없이댐
+			MaxMp = StatData->MaxMp;
 			Attack = StatData->Attack;
 			Speed = StatData->Speed;
 		}

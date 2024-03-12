@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "MyStatComponent.h"
 #include"MyPlayer.h"
+#include"HitEffect.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -88,44 +89,57 @@ void ABullet::Tick(float DeltaTime)
 
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
 
-
-	if (bResult && HitResult.Actor.IsValid())
+	if (HitResult.Actor.IsValid() && HitResult.Actor->GetName() != "BP_MyPlayer_C_0")
 	{
+		//UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
+		//DestroyOBJ();
+		return;
+	}
 
-		if (PlayerController)
+	else
+	{
+		if (bResult && HitResult.Actor.IsValid())
 		{
-			AMyPlayer* PlayerPawn = dynamic_cast<AMyPlayer*>(PlayerController->GetPawn()); // 플레이어 캐릭터를 얻음
-			if (PlayerPawn)
+
+			if (PlayerController)
 			{
-				FDamageEvent DamageEvent;
-				if (PlayerPawn->Get_ShiledCheck())
+				AMyPlayer* PlayerPawn = dynamic_cast<AMyPlayer*>(PlayerController->GetPawn()); // 플레이어 캐릭터를 얻음
+				if (PlayerPawn)
 				{
-					//UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
-					//플레이어가 방어할시 딜감하게 작업하기
+					FDamageEvent DamageEvent;
+					if (PlayerPawn->Get_ShiledCheck())
+					{
+						//UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
+						//플레이어가 방어할시 딜감하게 작업하기
 
 
-					HitResult.Actor->TakeDamage(10 / 2, DamageEvent, Control, this);
+						HitResult.Actor->TakeDamage(10 / 2, DamageEvent, Control, this);
 
-					DestroyOBJ();
+						DestroyOBJ();
+					}
+
+
+
+					else
+					{
+						//UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
+
+						HitResult.Actor->TakeDamage(10, DamageEvent, Control, this);
+						//hit effect
+
+						auto HitEffect = GetWorld()->SpawnActor<AHitEffect>(HitResult.Actor->GetActorLocation(), FRotator::ZeroRotator);
+
+						DestroyOBJ();
+					}
+
+
+
 				}
-
-
-
-				else
-				{
-					//UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
-
-					HitResult.Actor->TakeDamage(10, DamageEvent, Control, this);
-
-					DestroyOBJ();
-				}
-
-
 
 			}
 
-		}
 
+		}
 
 	}
 }

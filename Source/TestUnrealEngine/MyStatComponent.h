@@ -31,6 +31,12 @@ public:
 	int32 GetHp() { return Hp; }
 	int32 GetMaxHp() { return MaxHp; }
 	float GetRatioHp() { return Hp / (float)MaxHp; }
+
+	//void SetMp(int32 NewMp);
+	int32 GetMp() { return Mp; }
+	int32 GetMaxMp() { return MaxMp; }
+	float GetRatioMp() { return Mp / (float)MaxMp; }
+
 	int32 GetAttack() { return Attack; }
 	int32 GetSpeed() { return Speed; }
 	void SetSpeed(int32 NewSpeed);
@@ -40,7 +46,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 Hp;
 	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
-		int32 MaxHp;
+	int32 MaxHp;
+	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+		int32 Mp;
+	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+		int32 MaxMp;
+
 	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 Attack;
 	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))

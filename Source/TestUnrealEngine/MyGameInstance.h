@@ -22,6 +22,9 @@ struct FMyCharacterData : public FTableRowBase
 	int32 MaxHp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxMp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Speed;
 };
 

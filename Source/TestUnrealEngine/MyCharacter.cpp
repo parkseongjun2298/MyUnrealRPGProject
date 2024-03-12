@@ -14,6 +14,9 @@
 #include"MyPlayer.h"
 #include "GameFramework/PlayerController.h" // APlayerController 헤더 파일을 인클루드
 #include "Kismet/GameplayStatics.h" // UGameplayStatics 헤더 파일을 인클루드
+
+#include"HitEffect.h"
+
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
@@ -177,36 +180,53 @@ void AMyCharacter::AttackCheck()
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
 
 
-	if (bResult && HitResult.Actor.IsValid())
+	if (HitResult.Actor.IsValid() && HitResult.Actor->GetName() != "BP_MyPlayer_C_0")
+	{
+		//UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
+		return;
+	}
+	else
 	{
 
-		if (PlayerController)
+
+		if (bResult && HitResult.Actor.IsValid())
 		{
-			AMyPlayer* PlayerPawn = dynamic_cast<AMyPlayer*>(PlayerController->GetPawn()); // 플레이어 캐릭터를 얻음
-			if (PlayerPawn)
+
+			if (PlayerController)
 			{
-				FDamageEvent DamageEvent;
-				if (PlayerPawn->Get_ShiledCheck())
+				AMyPlayer* PlayerPawn = dynamic_cast<AMyPlayer*>(PlayerController->GetPawn()); // 플레이어 캐릭터를 얻음
+				if (PlayerPawn)
 				{
-					//플레이어가 방어할시 딜감하게 작업하기
-					
-					HitResult.Actor->TakeDamage(Stat->GetAttack() / 2, DamageEvent, GetController(), this);
-				}
-				else
-				{
-					
-					HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
-				}
+					FDamageEvent DamageEvent;
+					if (PlayerPawn->Get_ShiledCheck())
+					{
+						//플레이어가 방어할시 딜감하게 작업하기
+
+						HitResult.Actor->TakeDamage(Stat->GetAttack() / 2, DamageEvent, GetController(), this);
+						//hit effect
+
+						auto HitEffect = GetWorld()->SpawnActor<AHitEffect>(HitResult.Actor->GetActorLocation(), FRotator::ZeroRotator);
+
+					}
+					else
+					{
+
+						HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
+						//hit effect
+
+						auto HitEffect = GetWorld()->SpawnActor<AHitEffect>(HitResult.Actor->GetActorLocation(), FRotator::ZeroRotator);
+
+					}
 
 
+
+				}
 
 			}
 
 		}
 
 	}
-
-	
 		
 
 		
