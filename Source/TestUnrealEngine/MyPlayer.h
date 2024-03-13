@@ -42,6 +42,7 @@ public:
 	void LeftRight(float Value);
 	void Yaw(float Value);
 	void Pitch(float Value);
+	void CameraArm(float Value);
 
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);

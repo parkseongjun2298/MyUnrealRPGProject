@@ -189,6 +189,7 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMyPlayer::LeftRight);
 	PlayerInputComponent->BindAxis(TEXT("Yaw"), this, &AMyPlayer::Yaw);
 	PlayerInputComponent->BindAxis(TEXT("Pitch"), this, &AMyPlayer::Pitch);
+	PlayerInputComponent->BindAxis(TEXT("CameraArm"), this, &AMyPlayer::CameraArm);
 }
 
 
@@ -375,7 +376,13 @@ void AMyPlayer::Yaw(float Value)
 
 void AMyPlayer::Pitch(float Value)
 {
-	AddControllerPitchInput(Value);
+	//AddControllerPitchInput(Value);
+}
+
+void AMyPlayer::CameraArm(float Value)
+{
+	
+	SpringArm->TargetArmLength -= (Value*20.f);
 }
 
 void AMyPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
