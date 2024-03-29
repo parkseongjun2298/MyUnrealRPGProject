@@ -29,7 +29,7 @@ AMyPlayer::AMyPlayer()
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
-	SpringArm->TargetArmLength = 650.f;
+	SpringArm->TargetArmLength = 750.f;
 	SpringArm->SetRelativeRotation(FRotator(-35.f, 0.f, 0.f));
 
 

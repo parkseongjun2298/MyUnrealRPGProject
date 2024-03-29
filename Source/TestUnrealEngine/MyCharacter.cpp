@@ -111,7 +111,7 @@ void AMyCharacter::Tick(float DeltaTime)
 	if (IsHit)
 	{
 		FTimerHandle TimerHandle;
-		float Delay = 0.2f; // 2초 후에 제거
+		float Delay = 0.5f; // 2초 후에 제거
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyCharacter::SetHitfalse, Delay);
 	}
 }
