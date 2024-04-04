@@ -13,7 +13,7 @@
 #include"MyCharacterWidget.h"
 #include"MyAIController.h"
 #include"HUDWidget.h"
-
+#include"MiniMap.h"
 
 #include"HitEffect.h"
 #include"FireTonado.h"
@@ -51,14 +51,8 @@ AMyPlayer::AMyPlayer()
 	HPBar->SetWidgetSpace(EWidgetSpace::Screen);//어디서든 보이는
 
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> UW(TEXT("WidgetBlueprint'/Game/UI/UI_HUD.UI_HUD_C'"));
-	//블루프린트 링크는 _C를 해야함
-
-	if (UW.Succeeded())
-	{
-		//HPBar->SetWidgetClass(UW.Class);
-		//HPBar->SetDrawSize(FVector2D(200.f, 50.f));
-	}
+	
+	
 
 
 	static ConstructorHelpers::FClassFinder<UHUDWidget> UW2(TEXT("WidgetBlueprint'/Game/UI/UI_HUD.UI_HUD_C'"));
@@ -69,7 +63,13 @@ AMyPlayer::AMyPlayer()
 		HUDWidgetClass = UW2.Class;
 	}
 
+	static ConstructorHelpers::FClassFinder<UMiniMap> UW3(TEXT("WidgetBlueprint'/Game/UI/UI_MiniMap.UI_MiniMap_C'"));
+	//블루프린트 링크는 _C를 해야함
 
+	if (UW3.Succeeded())
+	{
+		HUDMiniMapClass = UW3.Class;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -92,6 +92,10 @@ void AMyPlayer::BeginPlay()
 	//}
 
 	HUDWidget->BindCharacterStat(Stat);
+
+
+	MiniMapWidget = Cast<UMiniMap>(CreateWidget(GetWorld(), HUDMiniMapClass));
+	MiniMapWidget->AddToViewport();
 }
 
 void AMyPlayer::PostInitializeComponents()
@@ -165,7 +169,7 @@ void AMyPlayer::Tick(float DeltaTime)
 	// Set the new location
 	SetActorLocation(NewLocation);
 
-
+	
 }
 
 // Called to bind functionality to input
@@ -489,3 +493,4 @@ void AMyPlayer::Buff()
 {
 	isOnBuff = true;
 }
+

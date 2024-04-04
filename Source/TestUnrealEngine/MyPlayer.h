@@ -106,9 +106,15 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UWidgetComponent* HPBar;
 
+	UPROPERTY(VisibleAnywhere)
+		class UWidgetComponent* MiniMap;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		TSubclassOf<class UHUDWidget> HUDWidgetClass;
 		
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		TSubclassOf<class UMiniMap> HUDMiniMapClass;
+
 
 	UPROPERTY()
 		bool isHit = false;
@@ -137,5 +143,10 @@ private:
 
 		UPROPERTY(VisibleAnywhere)
 		class UHUDWidget* HUDWidget;
+
+		UPROPERTY(VisibleAnywhere)
+		class UMiniMap* MiniMapWidget;
+
+		
 
 };
