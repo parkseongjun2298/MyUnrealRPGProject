@@ -30,6 +30,7 @@ public:
 
 	void PlaySkill_R_Montage();
 	void PlaySkill_E_Montage();
+	void PlaySkill_Q_Montage();
 private:
 	UFUNCTION()
 		void AnimNotify_AttackHit();
@@ -37,6 +38,8 @@ private:
 		void AnimNotify_ReadyFireTonado();
 	UFUNCTION()
 		void AnimNotify_ReadySkillE();
+	UFUNCTION()
+		void AnimNotify_ReadySkillQ();
 
 
 private:
@@ -70,9 +73,13 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* Skill_E_Montage;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* Skill_Q_Montage;
 
 public:
 	FOnAttackHit OnAttackHit;
 	FOnReadyFireTonado OnReadyFireTonado;
 	FOnReadySkillE OnReadySkillE;
+
+	FOnReadySkillE OnReadySkillQ;
 };

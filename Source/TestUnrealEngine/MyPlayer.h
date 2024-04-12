@@ -50,7 +50,8 @@ public:
 		void OnSkill_R_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
 		void OnSkill_E_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
+	UFUNCTION()
+		void OnSkill_Q_MontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void SetHitfalse();
 
@@ -80,7 +81,8 @@ private:
 		bool IsSkill_R_MontageCheck = false;
 	UPROPERTY(VisibleAnywhere, Category = Pawn)
 		bool IsSkill_E_MontageCheck = false;
-
+	UPROPERTY(VisibleAnywhere, Category = Pawn)
+		bool IsSkill_Q_MontageCheck = false;
 
 
 	UPROPERTY()

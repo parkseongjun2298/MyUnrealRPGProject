@@ -24,6 +24,13 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 	{
 		Skill_E_Montage = E_M.Object;
 	}
+
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> Q_M(TEXT("AnimMontage'/Game/Animations/Skill_Q_Montage.Skill_Q_Montage'"));
+	if (Q_M.Succeeded())
+	{
+		Skill_Q_Montage = Q_M.Object;
+	}
 }
 
 void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -92,4 +99,14 @@ void UPlayerAnimInstance::AnimNotify_ReadyFireTonado()
 void UPlayerAnimInstance::AnimNotify_ReadySkillE()
 {
 	OnReadySkillE.Broadcast();
+}
+
+
+void UPlayerAnimInstance::PlaySkill_Q_Montage()
+{
+	Montage_Play(Skill_Q_Montage, 1.f);
+}
+void UPlayerAnimInstance::AnimNotify_ReadySkillQ()
+{
+	OnReadySkillQ.Broadcast();
 }

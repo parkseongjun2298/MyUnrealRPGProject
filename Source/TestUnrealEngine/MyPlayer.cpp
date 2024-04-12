@@ -17,6 +17,7 @@
 
 #include"HitEffect.h"
 #include"FireTonado.h"
+#include"SwordEffect.h"
 // Sets default values
 AMyPlayer::AMyPlayer()
 {
@@ -29,7 +30,7 @@ AMyPlayer::AMyPlayer()
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
-	SpringArm->TargetArmLength = 750.f;
+	SpringArm->TargetArmLength = 1000.f;
 	SpringArm->SetRelativeRotation(FRotator(-35.f, 0.f, 0.f));
 
 
@@ -113,7 +114,8 @@ void AMyPlayer::PostInitializeComponents()
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnSkill_R_MontageEnded);
 		AnimInstance->OnReadySkillE.AddUObject(this, &AMyPlayer::ReadySkill_E);
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnSkill_E_MontageEnded);
-
+		//AnimInstance->OnReadySkillQ.AddUObject(this, &AMyPlayer::ReadySkill_Q);
+		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyPlayer::OnSkill_Q_MontageEnded);
 	}
 
 	HPBar->InitWidget();
@@ -151,6 +153,7 @@ void AMyPlayer::Tick(float DeltaTime)
 		if (BuffTime >= 10.f)
 		{
 			isOnBuff = false;
+			BuffTime = 0;
 		}
 
 	}
@@ -222,6 +225,10 @@ void AMyPlayer::Attack()
 	if (isOnBuff)
 	{
 		//발사하는 거 소환여기서
+
+		auto Fire = GetWorld()->SpawnActor<ASwordEffect>(GetActorLocation()+FVector(0.f,0.f,200.f), FRotator(0.f, 0.f, 90.f)+GetActorRotation());
+
+
 	}
 
 }
@@ -410,6 +417,11 @@ void AMyPlayer::OnSkill_E_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	IsSkill_E_MontageCheck = false;
 }
 
+void AMyPlayer::OnSkill_Q_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsSkill_Q_MontageCheck = false;
+}
+
 float AMyPlayer::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	Stat->OnAttacked(DamageAmount);
@@ -491,6 +503,17 @@ void AMyPlayer::RunFin()
 
 void AMyPlayer::Buff()
 {
-	isOnBuff = true;
+
+	if (/*isAttackMode&&*/ isEquipWeapon)
+	{
+		AnimInstance->PlaySkill_Q_Montage();
+
+		IsSkill_Q_MontageCheck = true;
+
+		isOnBuff = true;
+	}
+	
+
+
 }
 
