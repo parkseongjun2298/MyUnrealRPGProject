@@ -8,7 +8,7 @@ public class TestUnrealEngine : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG" , "NavigationSystem" , "AIModule" , "GameplayTasks"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG" , "NavigationSystem" , "AIModule" , "GameplayTasks" , "LevelSequence" , "MovieScene"  });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
