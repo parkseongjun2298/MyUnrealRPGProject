@@ -6,6 +6,7 @@
 #include"MyAIGunController.h"
 #include"MyPlayer.h"
 #include"BehaviorTree/BlackboardComponent.h"
+#include"MyAIBossController.h"
 
 UBTDecorator_CanAttack::UBTDecorator_CanAttack()
 {

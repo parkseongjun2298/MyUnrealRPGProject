@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "MyBoss.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);//델리게이트쓰면 F 를 앞에붙여야함
 UCLASS()
 class TESTUNREALENGINE_API AMyBoss : public ACharacter
 {
@@ -30,7 +31,7 @@ public:
 
 	void Attack();
 	void AttackCheck();
-	//FOnAttackEnd OnAttackEnd;
+	FOnAttackEnd OnAttackEnd;
 
 	void Die();
 	void DestroyMonster();
@@ -80,6 +81,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UWidgetComponent* HPBar;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		TSubclassOf<class UMyBossWidget> HUDWidgetClass;
+
 	UPROPERTY()
 		bool IsDie = false;
 	UPROPERTY()
@@ -88,5 +92,13 @@ public:
 		bool isBulletColCheck = false;
 
 	APlayerController* PlayerController;
+
+
+
+
+private:
+
+	UPROPERTY(VisibleAnywhere)
+		class UMyBossWidget* HUDWidget;
 
 };

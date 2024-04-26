@@ -9,7 +9,10 @@
 #include "MyWeapon.h"
 #include "MyStatComponent.h"
 #include"Components/WidgetComponent.h"
-#include"MyCharacterWidget.h"
+#include "MyBossWidget.h"
+#include"MyPlayer.h"
+#include"CinematicTriggerVolume.h"
+#include"MyAIBossController.h"
 
 // Sets default values
 AMyBoss::AMyBoss()
@@ -31,21 +34,20 @@ AMyBoss::AMyBoss()
 
 	HPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBAR"));
 	HPBar->SetupAttachment(GetMesh());
-	HPBar->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
+	HPBar->SetRelativeLocation(FVector(200.f, 0.f, 500.f));
 	HPBar->SetWidgetSpace(EWidgetSpace::Screen);//어디서든 보이는
 
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> UW(TEXT("WidgetBlueprint'/Game/UI/WBP_HPBar.WBP_HPBar_C'"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> UW(TEXT("WidgetBlueprint'/Game/UI/UI_BossHP.UI_BossHP_C'"));
 	//블루프린트 링크는 _C를 해야함
 
 	if (UW.Succeeded())
 	{
-		HPBar->SetWidgetClass(UW.Class);
-		HPBar->SetDrawSize(FVector2D(200.f, 50.f));
+		HUDWidgetClass = UW.Class;
 	}
 
 
-	//AIControllerClass = AMyAIGunController::StaticClass();
+	AIControllerClass = AMyAIBossController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 }
@@ -54,6 +56,11 @@ AMyBoss::AMyBoss()
 void AMyBoss::BeginPlay()
 {
 	Super::BeginPlay();
+
+
+	HUDWidget = Cast<UMyBossWidget> (CreateWidget(GetWorld(), HUDWidgetClass));
+	HUDWidget->AddToViewport();
+	HUDWidget->BindHP(Stat);
 	
 }
 
@@ -67,11 +74,13 @@ void AMyBoss::PostInitializeComponents()
 		
 	}
 
+
+
 	HPBar->InitWidget();
 
 	//체력깍이는ui여기서
 
-	auto HpWidget = Cast<UMyCharacterWidget>(HPBar->GetUserWidgetObject());
+	auto HpWidget = Cast<UMyBossWidget>(HPBar->GetUserWidgetObject());
 	if (HpWidget)
 	{
 		HpWidget->BindHP(Stat);
@@ -106,10 +115,24 @@ void AMyBoss::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMyBoss::Attack()
 {
+	if (IsAttacking || IsDie || IsHit)
+		return;
+
+	AnimInstance->PlayAttackMontage();
+
+	
+
+	AnimInstance->JumpToSection(AttackIndex);
+	AttackIndex = (AttackIndex + 1) % 4;
+
+	IsAttacking = true;
+	IsMontageChek = true;
+
 }
 
 void AMyBoss::AttackCheck()
 {
+	UE_LOG(LogTemp, Log, TEXT("ColCheck :"));
 }
 
 void AMyBoss::Die()
@@ -127,6 +150,8 @@ void AMyBoss::Die()
 
 void AMyBoss::DestroyMonster()
 {
+	HPBar->DestroyComponent();
+	HUDWidget->RemoveFromParent();
 	Destroy();
 }
 
@@ -135,7 +160,7 @@ void AMyBoss::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	IsAttacking = false;
 	IsMontageChek = false;
 
-	//OnAttackEnd.Broadcast();//공격 전파 
+	OnAttackEnd.Broadcast();//공격 전파 
 }
 
 float AMyBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

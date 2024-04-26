@@ -9,6 +9,7 @@
 #include"BehaviorTree/BehaviorTree.h"
 #include"BehaviorTree/BlackboardData.h"
 #include"BehaviorTree/BlackboardComponent.h"
+
 UBTTAST_FindRandomPos::UBTTAST_FindRandomPos()
 {
 	NodeName = TEXT("FindRandomPos");//언리얼bt에생성할 함수명

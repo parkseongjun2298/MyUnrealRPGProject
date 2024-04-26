@@ -6,7 +6,7 @@
 #include"MyPlayer.h"
 #include"BehaviorTree/BlackboardComponent.h"
 #include"DrawDebugHelpers.h"
-
+#include"MyAIBossController.h"
 UBT_GunSearchTarget::UBT_GunSearchTarget()
 {
 	NodeName = TEXT("SearchGunTarget");

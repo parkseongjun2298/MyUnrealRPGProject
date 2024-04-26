@@ -5,6 +5,7 @@
 #include"MyAIGunController.h"
 #include"MyPlayer.h"
 #include"BehaviorTree/BlackboardComponent.h"
+#include"MyAIBossController.h"
 
 UBTDecorator_GunCanAttack::UBTDecorator_GunCanAttack()
 {

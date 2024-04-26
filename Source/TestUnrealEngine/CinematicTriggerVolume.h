@@ -31,6 +31,8 @@ public:
     UFUNCTION()
         void OnPlayerEnterTrigger(class AActor* OverlappedActor, class AActor* OtherActor);
 
+public:
+    bool Get_FinishCine() { return bTriggerEnabled; }
 private:
     bool bTriggerEnabled = true;
 };
