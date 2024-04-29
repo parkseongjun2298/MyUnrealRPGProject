@@ -4,7 +4,7 @@
 #include "MyBoss.h"
 
 #include "Components/CapsuleComponent.h"
-#include "MyGunCharacterAnimInstance.h"
+#include "BossAnimInstance.h"
 #include "DrawDebugHelpers.h"
 #include "MyWeapon.h"
 #include "MyStatComponent.h"
@@ -13,7 +13,9 @@
 #include"MyPlayer.h"
 #include"CinematicTriggerVolume.h"
 #include"MyAIBossController.h"
-
+#include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include"BossRock.h"
 // Sets default values
 AMyBoss::AMyBoss()
 {
@@ -68,10 +70,11 @@ void AMyBoss::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	AnimInstance = Cast<UMyGunCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance = Cast<UBossAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
-		
+		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyBoss::OnAttackMontageEnded);
+		AnimInstance->OnAttackHit.AddUObject(this, &AMyBoss::AttackCheck);
 	}
 
 
@@ -101,8 +104,28 @@ void AMyBoss::Tick(float DeltaTime)
 	{
 		FTimerHandle TimerHandle;
 		float Delay = 0.2f; // 2초 후에 제거
-		//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyGunCharacter::SetHitfalse, Delay);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyBoss::SetHitfalse, Delay);
 	}
+
+
+	
+	 PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
+	if (PlayerController)
+	{
+		APawn* PlayerPawn = PlayerController->GetPawn(); // 플레이어 캐릭터를 얻음
+		if (PlayerPawn)
+		{
+			TargetPos = PlayerPawn->GetActorLocation();
+		}
+	}
+
+
+	
+
+	FVector DirectVec = (TargetPos - this->GetActorLocation()).GetSafeNormal();
+	FRotator NewRotation = FRotationMatrix::MakeFromX(DirectVec).Rotator();
+
+	this->SetActorRotation(NewRotation);
 
 }
 
@@ -122,8 +145,44 @@ void AMyBoss::Attack()
 
 	
 
-	AnimInstance->JumpToSection(AttackIndex);
+	
 	AttackIndex = (AttackIndex + 1) % 4;
+
+	if (AttackIndex % 4 == 1)
+	{
+		auto Bullet = GetWorld()->SpawnActor<ABossRock>(GetActorLocation() + GetActorUpVector() * 200.f, FRotator::ZeroRotator);
+		if (Bullet)
+		{
+			// 방향 벡터 전달
+			FVector DirectionVector = GetActorForwardVector();
+			FRotator Rot = GetActorRotation();
+			Bullet->InitializeWithDirection(DirectionVector, Rot, GetController());
+
+		}
+
+		auto Bullet2 = GetWorld()->SpawnActor<ABossRock>(GetActorLocation() + GetActorRightVector() * -200.f, FRotator::ZeroRotator);
+		if (Bullet2)
+		{
+			// 방향 벡터 전달
+			FVector DirectionVector = GetActorForwardVector();
+			FRotator Rot = GetActorRotation();
+			Bullet2->InitializeWithDirection(DirectionVector, Rot, GetController());
+
+		}
+		auto Bullet3 = GetWorld()->SpawnActor<ABossRock>(GetActorLocation() + GetActorRightVector() * 200.f, FRotator::ZeroRotator);
+		if (Bullet3)
+		{
+			// 방향 벡터 전달
+			FVector DirectionVector = GetActorForwardVector();
+			FRotator Rot = GetActorRotation();
+			Bullet3->InitializeWithDirection(DirectionVector, Rot, GetController());
+
+		}
+
+		//AttackIndex 2 3 0 일때 하나씩 나가게 설정해주기 해야함!
+
+	}
+
 
 	IsAttacking = true;
 	IsMontageChek = true;

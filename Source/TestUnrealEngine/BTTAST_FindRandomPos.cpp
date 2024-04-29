@@ -4,6 +4,7 @@
 #include "BTTAST_FindRandomPos.h"
 #include "MyAIController.h"
 #include"MyAIGunController.h"
+#include"MyAIBossController.h"
 #include"NavigationSystem.h"
 #include"Blueprint/AiBlueprintHelperLibrary.h"
 #include"BehaviorTree/BehaviorTree.h"

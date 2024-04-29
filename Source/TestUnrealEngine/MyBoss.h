@@ -57,7 +57,7 @@ private:
 		bool IsMontageChek = false;
 
 	UPROPERTY()
-		class UMyGunCharacterAnimInstance* AnimInstance;
+		class UBossAnimInstance* AnimInstance;
 
 	UPROPERTY()
 		int32 AttackIndex = 0;
@@ -100,5 +100,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 		class UMyBossWidget* HUDWidget;
+
+	FVector TargetPos;
 
 };
