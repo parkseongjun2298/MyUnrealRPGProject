@@ -108,7 +108,18 @@ void AFireTonado::Tick(float DeltaTime)
 		ECollisionChannel::ECC_GameTraceChannel5,
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
+	FVector Vec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + Vec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat Rotation = FRotationMatrix::MakeFromZ(Vec).ToQuat();
+	FColor DrawColor;
+	if (bResult)
+		DrawColor = FColor::Green;
+	else
+		DrawColor = FColor::Red;
 
+	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius,
+		Rotation, DrawColor, false, 2.f);
 
 
 

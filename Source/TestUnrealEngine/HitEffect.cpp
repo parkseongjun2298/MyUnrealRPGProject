@@ -19,7 +19,10 @@ AHitEffect::AHitEffect()
 	{
 		OurParticleSystem->SetTemplate(ParticleAsset.Object);
 	}
+	RootComponent = OurParticleSystem;
+	OurParticleSystem->SetupAttachment(RootComponent);
 
+	
 }
 
 void AHitEffect::DestroyOBJ()

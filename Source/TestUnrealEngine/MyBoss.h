@@ -7,6 +7,7 @@
 #include "MyBoss.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);//델리게이트쓰면 F 를 앞에붙여야함
+DECLARE_MULTICAST_DELEGATE(FOnAttackEnd2);//델리게이트쓰면 F 를 앞에붙여야함
 UCLASS()
 class TESTUNREALENGINE_API AMyBoss : public ACharacter
 {
@@ -30,21 +31,25 @@ public:
 
 
 	void Attack();
+	void Attack2();
 	void AttackCheck();
+	void ReadyMove();
+	void CreateMeteor();
 	FOnAttackEnd OnAttackEnd;
-
+	FOnAttackEnd2 OnAttackEnd2;
 	void Die();
 	void DestroyMonster();
 
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
+	UFUNCTION()
+		void OnAttackMontageEnded2(UAnimMontage* Montage, bool bInterrupted);
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void SetHitfalse();
 
 	void SetBulletColCheck() { isBulletColCheck = true; }
 	bool GetIsHit() { return IsHit; }
-
+	bool GetIsGrogy() { return IsGrogy; }
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Pawn)
@@ -55,14 +60,16 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Pawn)
 		bool IsMontageChek = false;
+	UPROPERTY(VisibleAnywhere, Category = Pawn)
+		bool IsAttackMontageChek2 = false;
 
 	UPROPERTY()
 		class UBossAnimInstance* AnimInstance;
 
 	UPROPERTY()
 		int32 AttackIndex = 0;
-
-
+	UPROPERTY()
+		int32 AttackIndex2 = 0;
 
 public:
 
@@ -88,6 +95,8 @@ public:
 		bool IsDie = false;
 	UPROPERTY()
 		bool IsHit = false;
+	UPROPERTY()
+		bool IsGrogy = false;
 	UPROPERTY()
 		bool isBulletColCheck = false;
 

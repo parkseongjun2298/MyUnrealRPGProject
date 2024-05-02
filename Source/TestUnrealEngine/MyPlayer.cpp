@@ -226,7 +226,7 @@ void AMyPlayer::Attack()
 	{
 		//발사하는 거 소환여기서
 
-		auto Fire = GetWorld()->SpawnActor<ASwordEffect>(GetActorLocation()+FVector(0.f,0.f,200.f), FRotator(0.f, 0.f, 90.f)+GetActorRotation());
+		auto Fire = GetWorld()->SpawnActor<ASwordEffect>(GetActorLocation(), FRotator(0.f, 0.f, 90.f)+GetActorRotation());
 
 
 	}

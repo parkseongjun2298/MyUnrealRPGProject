@@ -13,6 +13,13 @@ UBossAnimInstance::UBossAnimInstance()
 	{
 		AttackMontage = AM.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM2(TEXT("AnimMontage'/Game/Animations/Boss_Skill1.Boss_Skill1'"));
+	if (AM2.Succeeded())
+	{
+		AttackMontage2 = AM2.Object;
+	}
+
 }
 
 void UBossAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -27,11 +34,12 @@ void UBossAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		auto Character = Cast<AMyBoss>(Pawn);
 		if (Character)
 		{
-			IsFalling = Character->GetMovementComponent()->IsFalling();
+			
 			IsDie = Character->IsDie;
 			IsHit = Character->IsHit;
 			Vertical = Character->UpDownValue;
 			Horizontal = Character->LeftRightValue;
+			IsGrogy = Character->IsGrogy;
 		}
 	}
 }
@@ -39,6 +47,11 @@ void UBossAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UBossAnimInstance::PlayAttackMontage()
 {
 	Montage_Play(AttackMontage, 1.f);
+}
+
+void UBossAnimInstance::PlayAttackMontage2()
+{
+	Montage_Play(AttackMontage2, 1.f);
 }
 
 FName UBossAnimInstance::GetAttackMontageName(int32 SectionIndex)
@@ -50,4 +63,13 @@ FName UBossAnimInstance::GetAttackMontageName(int32 SectionIndex)
 void UBossAnimInstance::AnimNotify_AttackHit()
 {
 	OnAttackHit.Broadcast();
+}
+void UBossAnimInstance::AnimNotify_ReadyMove()
+{
+	OnReadyMove.Broadcast();
+}
+
+void UBossAnimInstance::AnimNotify_CreateMeteor()
+{
+	OnCreateMeteor.Broadcast();
 }

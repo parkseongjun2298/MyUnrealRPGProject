@@ -28,16 +28,9 @@ ASwordEffect::ASwordEffect()
 
 	Weapon->SetCollisionProfileName(TEXT("PlayerSkill"));
 
-	OurParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MovementParticles"));
-	OurParticleSystem->SetupAttachment(Weapon);
-	OurParticleSystem->bAutoActivate = true;
-	OurParticleSystem->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	
 
-	/*static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("ParticleSystem'/Game/FXVarietyPack/Particles/P_ky_thunderStorm.P_ky_thunderStorm'"));
-	if (ParticleAsset.Succeeded())
-	{
-		OurParticleSystem->SetTemplate(ParticleAsset.Object);
-	}*/
+	
 
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
 	if (PlayerController)
@@ -86,18 +79,23 @@ void ASwordEffect::Tick(float DeltaTime)
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	float AttackRange = 100.f;
-	float AttackRadius = 100.f;
+	float AttackRange = 50.f;
+	float AttackRadius = 50.f;
+
+	
+
+
 
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		OUT HitResult,
 		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackRange,
+		GetActorLocation() + GetActorForwardVector(),
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel5,
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
+	
 
 
 
@@ -107,7 +105,7 @@ void ASwordEffect::Tick(float DeltaTime)
 
 		FDamageEvent DamageEvent;
 
-		HitResult.Actor->TakeDamage(0.5f, DamageEvent, PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0), this);
+		HitResult.Actor->TakeDamage(0.05f, DamageEvent, PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0), this);
 
 
 	}

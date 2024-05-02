@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BossRock.generated.h"
+#include "BossBlackHole.generated.h"
 
 UCLASS()
-class TESTUNREALENGINE_API ABossRock : public AActor
+class TESTUNREALENGINE_API ABossBlackHole : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABossRock();
+	ABossBlackHole();
 	void DestroyOBJ();
 protected:
 	// Called when the game starts or when spawned
@@ -22,7 +22,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 public:
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* Weapon;
@@ -43,9 +42,5 @@ public:
 
 
 	AController* Control;
-	
-private:
-	float Gravity=980.f;
-	float Time=0.f;
 
 };
