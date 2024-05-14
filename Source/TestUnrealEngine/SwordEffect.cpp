@@ -70,7 +70,7 @@ void ASwordEffect::Tick(float DeltaTime)
 
 	CurrentLocation = GetActorLocation();
 
-	float Speed = 800.0f; // 움직이는 속도 조절
+	float Speed = 2000.0f; // 움직이는 속도 조절
 	FVector NewLocation = CurrentLocation + (ForwardVector * Speed * DeltaTime);
 
 	SetActorLocation(NewLocation);
@@ -96,7 +96,18 @@ void ASwordEffect::Tick(float DeltaTime)
 		Params);
 
 	
+	FVector Vec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + Vec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat Rotation = FRotationMatrix::MakeFromZ(Vec).ToQuat();
+	FColor DrawColor;
+	if (bResult)
+		DrawColor = FColor::Green;
+	else
+		DrawColor = FColor::Red;
 
+	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius,
+		Rotation, DrawColor, false, 2.f);
 
 
 	if (bResult && HitResult.Actor.IsValid())
@@ -105,9 +116,9 @@ void ASwordEffect::Tick(float DeltaTime)
 
 		FDamageEvent DamageEvent;
 
-		HitResult.Actor->TakeDamage(0.05f, DamageEvent, PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0), this);
+		HitResult.Actor->TakeDamage(10.f, DamageEvent, PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0), this);
 
-
+		DestroyOBJ();
 	}
 
 

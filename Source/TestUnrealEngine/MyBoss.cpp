@@ -293,6 +293,24 @@ void AMyBoss::CreateMeteor()
 		FVector DirectionVector = GetActorForwardVector();
 		FRotator Rot = GetActorRotation();
 		BlackHole->InitializeWithDirection(DirectionVector, Rot, GetController());
+	}
+	auto BlackHole2 = GetWorld()->SpawnActor<ABossBlackHole>(GetActorLocation() + GetActorUpVector(), FRotator::ZeroRotator);
+	if (BlackHole2)
+	{
+		// 방향 벡터 전달
+		FVector DirectionVector = GetActorForwardVector();
+		FRotator Rot = GetActorRotation();
+		BlackHole2->InitializeWithDirection(DirectionVector + GetActorRightVector(), Rot, GetController());
+
+
+	}
+	auto BlackHole3 = GetWorld()->SpawnActor<ABossBlackHole>(GetActorLocation() + GetActorUpVector(), FRotator::ZeroRotator);
+	if (BlackHole3)
+	{
+		// 방향 벡터 전달
+		FVector DirectionVector = GetActorForwardVector();
+		FRotator Rot = GetActorRotation();
+		BlackHole3->InitializeWithDirection(DirectionVector - GetActorRightVector(), Rot, GetController());
 
 	}
 }

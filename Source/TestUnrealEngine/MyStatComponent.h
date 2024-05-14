@@ -8,7 +8,7 @@
 
 
 DECLARE_MULTICAST_DELEGATE(FOnHpChanged);
-
+DECLARE_MULTICAST_DELEGATE(FOnMpChanged);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TESTUNREALENGINE_API UMyStatComponent : public UActorComponent
 {
@@ -26,13 +26,15 @@ protected:
 public:
 	void SetLevel(int32 Level);
 	void OnAttacked(float DamageAmount);
+	void OnUseSkill(float ManaAmount);
 	void SetHp(int32 NewHp);
+	void SetMp(int32 NewMp);
 	int32 GetLevel() { return Level; }
 	int32 GetHp() { return Hp; }
 	int32 GetMaxHp() { return MaxHp; }
 	float GetRatioHp() { return Hp / (float)MaxHp; }
 
-	//void SetMp(int32 NewMp);
+	
 	int32 GetMp() { return Mp; }
 	int32 GetMaxMp() { return MaxMp; }
 	float GetRatioMp() { return Mp / (float)MaxMp; }
@@ -59,4 +61,5 @@ private:
 
 public:
 	FOnHpChanged OnHpChanged;
+	FOnMpChanged OnMpChanged;
 };

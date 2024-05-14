@@ -45,7 +45,7 @@ void UMyStatComponent::SetLevel(int32 NewLevel)
 			Level = StatData->Level;
 			SetHp(StatData->MaxHp);//ui랑 관련댄거면 이렇게 함수로 관리하는게 ui랑연동더오류없이댐
 			MaxHp = StatData->MaxHp;
-			//SetMp(StatData->MaxMp);//ui랑 관련댄거면 이렇게 함수로 관리하는게 ui랑연동더오류없이댐
+			SetMp(StatData->MaxMp);//ui랑 관련댄거면 이렇게 함수로 관리하는게 ui랑연동더오류없이댐
 			MaxMp = StatData->MaxMp;
 			Attack = StatData->Attack;
 			Speed = StatData->Speed;
@@ -61,12 +61,27 @@ void UMyStatComponent::OnAttacked(float DamageAmount)
 	//UE_LOG(LogTemp, Warning, TEXT("OnAttacked %d"), Hp);
 }
 
+void UMyStatComponent::OnUseSkill(float ManaAmount)
+{
+	int NewMp = Mp - ManaAmount;
+
+	SetMp(NewMp);
+}
+
 void UMyStatComponent::SetHp(int32 NewHp)
 {
 	Hp = NewHp;
 	if (Hp < 0)
 		Hp = 0;
 	OnHpChanged.Broadcast();
+
+}
+void UMyStatComponent::SetMp(int32 NewMp)
+{
+	Mp = NewMp;
+	if (Mp < 0)
+		Mp = 0;
+	OnMpChanged.Broadcast();
 
 }
 

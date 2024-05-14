@@ -16,3 +16,5 @@ void UMyCharacterWidget::UpdateHp()
 	if(CurStatComp.IsValid())
 		PB_HPBar->SetPercent(CurStatComp->GetRatioHp());
 }
+
+

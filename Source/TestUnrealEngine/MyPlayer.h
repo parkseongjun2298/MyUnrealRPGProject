@@ -65,6 +65,10 @@ public:
 	void RunFin();
 	void Buff();
 
+	void SkillCoolOnQ();
+	void SkillCoolOnE();
+	void SkillCoolOnR();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -109,6 +113,9 @@ public:
 		class UWidgetComponent* HPBar;
 
 	UPROPERTY(VisibleAnywhere)
+		class UWidgetComponent* MPBar;
+
+	UPROPERTY(VisibleAnywhere)
 		class UWidgetComponent* MiniMap;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -116,6 +123,9 @@ public:
 		
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		TSubclassOf<class UMiniMap> HUDMiniMapClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		TSubclassOf<class UMySkillWidget> HUDSkillClass;
 
 
 	UPROPERTY()
@@ -135,6 +145,21 @@ public:
 	UPROPERTY()
 		float BuffTime = 0.f;
 
+	
+		bool bSkillQCooldown = false;
+		bool bSkillECooldown = false;
+		bool bSkillRCooldown = false;
+		float CurrentQCoolDownTime = 0.f;;
+		float QCoolDownTime = 15.f;
+		FTimerHandle QCoolTimerHandle;
+		float CurrentECoolDownTime = 0.f;;
+		float ECoolDownTime = 10.f;
+		FTimerHandle ECoolTimerHandle;
+		float CurrentRCoolDownTime = 0.f;;
+		float RCoolDownTime = 20.f;
+		FTimerHandle RCoolTimerHandle;
+
+
 
 	UPROPERTY(EditAnywhere)
 		class AFireTonado* FireTonado;
@@ -149,6 +174,7 @@ private:
 		UPROPERTY(VisibleAnywhere)
 		class UMiniMap* MiniMapWidget;
 
-		
+		UPROPERTY(VisibleAnywhere)
+		class UMySkillWidget* SkillWidget;
 
 };

@@ -14,6 +14,7 @@
 #include"MyAIController.h"
 #include"HUDWidget.h"
 #include"MiniMap.h"
+#include"MySkillWidget.h"
 
 #include"HitEffect.h"
 #include"FireTonado.h"
@@ -71,6 +72,14 @@ AMyPlayer::AMyPlayer()
 	{
 		HUDMiniMapClass = UW3.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<UMySkillWidget> UW4(TEXT("WidgetBlueprint'/Game/UI/UI_Skill.UI_Skill_C'"));
+	//블루프린트 링크는 _C를 해야함
+
+	if (UW4.Succeeded())
+	{
+		HUDSkillClass = UW4.Class;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -97,6 +106,11 @@ void AMyPlayer::BeginPlay()
 
 	MiniMapWidget = Cast<UMiniMap>(CreateWidget(GetWorld(), HUDMiniMapClass));
 	MiniMapWidget->AddToViewport();
+
+	SkillWidget = Cast<UMySkillWidget>(CreateWidget(GetWorld(), HUDSkillClass));
+	SkillWidget->AddToViewport();
+
+
 }
 
 void AMyPlayer::PostInitializeComponents()
@@ -122,14 +136,18 @@ void AMyPlayer::PostInitializeComponents()
 
 	//체력깍이는ui여기서
 
-	auto HpWidget = Cast<UMyCharacterWidget>(HPBar->GetUserWidgetObject());
+	auto HpWidget = Cast<UHUDWidget>(HPBar->GetUserWidgetObject());
 	if (HpWidget)
 	{
-		HpWidget->BindHP(Stat);
+		HpWidget->BindCharacterStat(Stat);
 	}
 
 
-	
+	/*auto MpWidget = Cast<UHUDWidget>(MPBar->GetUserWidgetObject());
+	if (MpWidget)
+	{
+		MpWidget->BindCharacterStatMP(Stat);
+	}*/
 	
 
 }
@@ -171,6 +189,76 @@ void AMyPlayer::Tick(float DeltaTime)
 
 	// Set the new location
 	SetActorLocation(NewLocation);
+
+
+
+	//q스킬 쿨타임돌아가기
+
+	if (bSkillQCooldown)
+	{
+		
+		CurrentQCoolDownTime += DeltaTime;
+		float ProgressPercent = FMath::Clamp(CurrentQCoolDownTime / QCoolDownTime, 0.0f, 1.0f);
+
+		GetWorld()->GetTimerManager().SetTimer(QCoolTimerHandle, this, &AMyPlayer::SkillCoolOnQ, QCoolDownTime, false);
+
+		SkillWidget->GetSkillProgressBar_Q()->SetPercent(1.f - ProgressPercent);
+
+		if (CurrentQCoolDownTime >= QCoolDownTime)
+		{
+			// 쿨타임이 완료된 경우
+			
+			GetWorldTimerManager().ClearTimer(QCoolTimerHandle);
+			QCoolTimerHandle.Invalidate();
+			ProgressPercent = 0;
+			CurrentQCoolDownTime = 0;
+			bSkillQCooldown = false;
+		}
+	}
+	//E
+	if (bSkillECooldown)
+	{
+
+		CurrentECoolDownTime += DeltaTime;
+		float ProgressPercent = FMath::Clamp(CurrentECoolDownTime / ECoolDownTime, 0.0f, 1.0f);
+
+		GetWorld()->GetTimerManager().SetTimer(ECoolTimerHandle, this, &AMyPlayer::SkillCoolOnE, ECoolDownTime, false);
+
+		SkillWidget->GetSkillProgressBar_E()->SetPercent(1.f - ProgressPercent);
+
+		if (CurrentECoolDownTime >= ECoolDownTime)
+		{
+			// 쿨타임이 완료된 경우
+
+			GetWorldTimerManager().ClearTimer(ECoolTimerHandle);
+			ECoolTimerHandle.Invalidate();
+			ProgressPercent = 0;
+			CurrentECoolDownTime = 0;
+			bSkillECooldown = false;
+		}
+	}
+	//R
+	if (bSkillRCooldown)
+	{
+
+		CurrentRCoolDownTime += DeltaTime;
+		float ProgressPercent = FMath::Clamp(CurrentRCoolDownTime / RCoolDownTime, 0.0f, 1.0f);
+
+		GetWorld()->GetTimerManager().SetTimer(RCoolTimerHandle, this, &AMyPlayer::SkillCoolOnR, RCoolDownTime, false);
+
+		SkillWidget->GetSkillProgressBar_R()->SetPercent(1.f - ProgressPercent);
+
+		if (CurrentRCoolDownTime >= RCoolDownTime)
+		{
+			// 쿨타임이 완료된 경우
+
+			GetWorldTimerManager().ClearTimer(RCoolTimerHandle);
+			RCoolTimerHandle.Invalidate();
+			ProgressPercent = 0;
+			CurrentRCoolDownTime = 0;
+			bSkillRCooldown = false;
+		}
+	}
 
 	
 }
@@ -226,7 +314,7 @@ void AMyPlayer::Attack()
 	{
 		//발사하는 거 소환여기서
 
-		auto Fire = GetWorld()->SpawnActor<ASwordEffect>(GetActorLocation(), FRotator(0.f, 0.f, 90.f)+GetActorRotation());
+		auto Fire = GetWorld()->SpawnActor<ASwordEffect>(GetActorLocation()+GetActorForwardVector(), FRotator(90.f, 0.f, 90.f) + GetActorRotation());
 
 
 	}
@@ -438,12 +526,19 @@ void AMyPlayer::SetHitfalse()
 void AMyPlayer::Skill_R()
 {
 	
-	if (/*isAttackMode&&*/ isEquipWeapon)
+
+
+	if (/*isAttackMode&&*/ isEquipWeapon && !bSkillRCooldown)
 	{
 		AnimInstance->PlaySkill_R_Montage();
 
 		IsSkill_R_MontageCheck = true;
 
+		Stat->OnUseSkill(20);
+
+		SkillWidget->GetSkillProgressBar_R()->SetPercent(1.f);
+
+		bSkillRCooldown = true;
 	}
 }
 
@@ -451,12 +546,17 @@ void AMyPlayer::Skill_E()
 {
 	
 
-	if (/*isAttackMode&&*/ isEquipWeapon)
+	if (/*isAttackMode&&*/ isEquipWeapon && !bSkillECooldown)
 	{
 		AnimInstance->PlaySkill_E_Montage();
 
 		IsSkill_E_MontageCheck = true;
 
+		Stat->OnUseSkill(10);
+
+		SkillWidget->GetSkillProgressBar_E()->SetPercent(1.f);
+
+		bSkillECooldown = true;
 	}
 }
 
@@ -504,16 +604,45 @@ void AMyPlayer::RunFin()
 void AMyPlayer::Buff()
 {
 
-	if (/*isAttackMode&&*/ isEquipWeapon)
+	if (/*isAttackMode&&*/ isEquipWeapon && !bSkillQCooldown)
 	{
+
+		bSkillQCooldown = true;
 		AnimInstance->PlaySkill_Q_Montage();
 
 		IsSkill_Q_MontageCheck = true;
 
 		isOnBuff = true;
+
+		Stat->OnUseSkill(20);
+
+		SkillWidget->GetSkillProgressBar_Q()->SetPercent(1.f);
+
+		
+
+
+		
 	}
 	
 
+
+}
+
+void AMyPlayer::SkillCoolOnQ()
+{
+	bSkillQCooldown = false;
+
+}
+
+void AMyPlayer::SkillCoolOnE()
+{
+	bSkillECooldown = false;
+
+}
+
+void AMyPlayer::SkillCoolOnR()
+{
+	bSkillRCooldown = false;
 
 }
 

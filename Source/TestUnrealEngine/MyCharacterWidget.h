@@ -17,9 +17,12 @@ class TESTUNREALENGINE_API UMyCharacterWidget : public UUserWidget
 public:
 	void BindHP(class UMyStatComponent* StatComp);
 	void UpdateHp();
+
 private:
 	UPROPERTY(meta = (BindWidget)) //이걸함으로서 블루프린트의 프로그래서바랑 연동유도
 	class UProgressBar* PB_HPBar;
+	
+
 
 	TWeakObjectPtr<class UMyStatComponent> CurStatComp;
 };

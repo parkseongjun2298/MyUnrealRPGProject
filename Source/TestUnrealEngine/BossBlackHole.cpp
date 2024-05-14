@@ -27,6 +27,18 @@ ABossBlackHole::ABossBlackHole()
 
 	Weapon->SetupAttachment(RootComponent);
 	Weapon->SetCollisionProfileName(TEXT("MonsterSkill"));
+	OurParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MovementParticles"));
+	OurParticleSystem->SetupAttachment(Weapon);
+	OurParticleSystem->bAutoActivate = true;
+	OurParticleSystem->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("ParticleSystem'/Game/ParagonGideon/FX/Particles/Gideon/Abilities/Burden/FX/P_Gideon_Burden_Projectile.P_Gideon_Burden_Projectile'"));
+	if (ParticleAsset.Succeeded())
+	{
+		OurParticleSystem->SetTemplate(ParticleAsset.Object);
+	}
+
+	
 }
 
 void ABossBlackHole::DestroyOBJ()
@@ -39,7 +51,7 @@ void ABossBlackHole::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FVector NewScale = FVector(2.f, 2.f, 2.f);
+	FVector NewScale = FVector(0.5f, 0.5f, 0.5f);
 	Weapon->SetWorldScale3D(NewScale);
 
 	// 특정 시간 후에 몬스터를 제거
