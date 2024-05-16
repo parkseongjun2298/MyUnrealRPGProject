@@ -7,6 +7,8 @@
 #include "MyGunCharacterAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackHit);
+DECLARE_MULTICAST_DELEGATE(FOnCreateBullet);
+
 /**
  * 
  */
@@ -27,7 +29,8 @@ public:
 private:
 	UFUNCTION()
 		void AnimNotify_AttackHit();
-
+	UFUNCTION()
+		void AnimNotify_CreateBullet();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		float Speed;
@@ -52,4 +55,5 @@ private:
 
 public:
 	FOnAttackHit OnAttackHit;
+	FOnCreateBullet OnCreateBullet;
 };

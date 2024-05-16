@@ -105,14 +105,20 @@ void AMyBoss::Tick(float DeltaTime)
 	{
 		Die();
 	}
+	if (Stat->GetHp() <= Stat->GetMaxHp()/2 && !isGrogyCheck)
+	{
+		IsGrogy = true;
+		isGrogyCheck = true;
+	}
 
-	if (IsHit)
+	if (IsGrogy)
 	{
 		FTimerHandle TimerHandle;
-		float Delay = 0.2f; // 2초 후에 제거
+		float Delay = 6.f; // 6초 후에 제거
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyBoss::SetHitfalse, Delay);
 	}
 
+	UE_LOG(LogTemp, Log, TEXT("IsGrogy 값: %s"), IsGrogy ? TEXT("true") : TEXT("false"));
 
 	
 	 PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
@@ -144,7 +150,7 @@ void AMyBoss::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMyBoss::Attack()
 {
-	if (IsAttacking || IsDie || IsHit)
+	if (IsAttacking || IsDie || IsHit || IsGrogy)
 		return;
 
 	AnimInstance->PlayAttackMontage();
@@ -164,7 +170,7 @@ void AMyBoss::Attack()
 
 void AMyBoss::Attack2()
 {
-	if ( IsDie || IsHit)
+	if ( IsDie || IsHit || IsGrogy)
 		return;
 
 	AnimInstance->PlayAttackMontage2();
@@ -211,7 +217,7 @@ void AMyBoss::AttackCheck()
 
 	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius,
 		Rotation, DrawColor, false, 2.f);
-
+	
 
 
 
@@ -361,6 +367,6 @@ float AMyBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 
 void AMyBoss::SetHitfalse()
 {
-	IsHit = false;
+	IsGrogy = false;
 }
 

@@ -32,6 +32,7 @@ public:
 
 	void Attack();
 	void AttackCheck();
+	void CreateBullet();
 	FOnAttackEnd OnAttackEnd;
 
 	void Die();

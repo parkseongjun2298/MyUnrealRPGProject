@@ -28,7 +28,7 @@ ABullet::ABullet()
 
 	
 	Weapon->SetupAttachment(RootComponent);
-	//Weapon->SetCollisionProfileName(TEXT("Attack"));
+	Weapon->SetCollisionProfileName(TEXT("MonsterSkill"));
 	
 
 

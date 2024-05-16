@@ -56,3 +56,8 @@ void UMyGunCharacterAnimInstance::AnimNotify_AttackHit()
 {
 	OnAttackHit.Broadcast();
 }
+
+void UMyGunCharacterAnimInstance::AnimNotify_CreateBullet()
+{
+	OnCreateBullet.Broadcast();
+}

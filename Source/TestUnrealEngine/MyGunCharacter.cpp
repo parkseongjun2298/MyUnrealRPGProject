@@ -85,6 +85,7 @@ void AMyGunCharacter::PostInitializeComponents()
 	{
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyGunCharacter::OnAttackMontageEnded);
 		AnimInstance->OnAttackHit.AddUObject(this, &AMyGunCharacter::AttackCheck);
+		AnimInstance->OnCreateBullet.AddUObject(this, &AMyGunCharacter::CreateBullet);
 	}
 
 	HPBar->InitWidget();
@@ -132,15 +133,7 @@ void AMyGunCharacter::Attack()
 
 	AnimInstance->PlayAttackMontage();
 
-	auto Bullet = GetWorld()->SpawnActor<ABullet>(GetActorLocation()+GetActorForwardVector()*200.f+GetActorUpVector()*60.f, FRotator::ZeroRotator);
-	if (Bullet)
-	{
-		// 방향 벡터 전달
-		FVector DirectionVector = GetActorForwardVector();
-		FRotator Rot = GetActorRotation();
-		Bullet->InitializeWithDirection(DirectionVector, Rot, GetController());
-		
-	}
+	
 
 	AnimInstance->JumpToSection(AttackIndex);
 	AttackIndex = (AttackIndex + 1) % 3;
@@ -236,6 +229,19 @@ void AMyGunCharacter::AttackCheck()
 
 	}
 
+}
+
+void AMyGunCharacter::CreateBullet()
+{
+	auto Bullet = GetWorld()->SpawnActor<ABullet>(GetActorLocation() + GetActorForwardVector() * 200.f + GetActorUpVector() * 60.f, FRotator::ZeroRotator);
+	if (Bullet)
+	{
+		// 방향 벡터 전달
+		FVector DirectionVector = GetActorForwardVector();
+		FRotator Rot = GetActorRotation();
+		Bullet->InitializeWithDirection(DirectionVector, Rot, GetController());
+
+	}
 }
 
 void AMyGunCharacter::Die()

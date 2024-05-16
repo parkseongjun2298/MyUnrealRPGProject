@@ -19,34 +19,36 @@ EBTNodeResult::Type UBTask_BossAttack::ExecuteTask(UBehaviorTreeComponent& Owner
 	if (MyChar == nullptr)
 		return EBTNodeResult::Failed;
 
-
-
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
-	if (PlayerController)
+	if (MyChar->GetIsGrogy() == false)
 	{
-		APawn* PlayerPawn = PlayerController->GetPawn(); // 플레이어 캐릭터를 얻음
-		if (PlayerPawn)
+
+		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
+		if (PlayerController)
 		{
-			TargetPos = PlayerPawn->GetActorLocation();
+			APawn* PlayerPawn = PlayerController->GetPawn(); // 플레이어 캐릭터를 얻음
+			if (PlayerPawn)
+			{
+				TargetPos = PlayerPawn->GetActorLocation();
+			}
 		}
+
+		FVector DirectVec = (TargetPos - MyChar->GetActorLocation()).GetSafeNormal();
+		FRotator NewRotation = FRotationMatrix::MakeFromX(DirectVec).Rotator();
+
+		MyChar->SetActorRotation(NewRotation);
+		MyChar->Attack();
+		bIsAttacking = true;
+
+		//람다사용 알기
+
+		MyChar->OnAttackEnd.AddLambda([this]()
+			{
+				bIsAttacking = false;
+			});
+
 	}
-
-	FVector DirectVec = (TargetPos - MyChar->GetActorLocation()).GetSafeNormal();
-	FRotator NewRotation = FRotationMatrix::MakeFromX(DirectVec).Rotator();
-
-	MyChar->SetActorRotation(NewRotation);
-	MyChar->Attack();
-	bIsAttacking = true;
-
-	//람다사용 알기
-
-	MyChar->OnAttackEnd.AddLambda([this]()
-		{
-			bIsAttacking = false;
-		});
-
-
-	return Result;
+		return Result;
+	
 }
 
 void UBTask_BossAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)

@@ -52,7 +52,10 @@ AMyPlayer::AMyPlayer()
 	HPBar->SetRelativeLocation(FVector(0.f, 0.f, 180.f));
 	HPBar->SetWidgetSpace(EWidgetSpace::Screen);//어디서든 보이는
 
-
+	MPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("MPBAR"));
+	MPBar->SetupAttachment(GetMesh());
+	MPBar->SetRelativeLocation(FVector(0.f, 0.f, 360.f));
+	MPBar->SetWidgetSpace(EWidgetSpace::Screen);//어디서든 보이는
 	
 	
 
@@ -142,12 +145,12 @@ void AMyPlayer::PostInitializeComponents()
 		HpWidget->BindCharacterStat(Stat);
 	}
 
-
-	/*auto MpWidget = Cast<UHUDWidget>(MPBar->GetUserWidgetObject());
+	MPBar->InitWidget();
+	auto MpWidget = Cast<UHUDWidget>(MPBar->GetUserWidgetObject());
 	if (MpWidget)
 	{
 		MpWidget->BindCharacterStatMP(Stat);
-	}*/
+	}
 	
 
 }
@@ -534,7 +537,7 @@ void AMyPlayer::Skill_R()
 
 		IsSkill_R_MontageCheck = true;
 
-		Stat->OnUseSkill(20);
+		Stat->OnUseSkill(20.f);
 
 		SkillWidget->GetSkillProgressBar_R()->SetPercent(1.f);
 
@@ -552,7 +555,7 @@ void AMyPlayer::Skill_E()
 
 		IsSkill_E_MontageCheck = true;
 
-		Stat->OnUseSkill(10);
+		Stat->OnUseSkill(10.f);
 
 		SkillWidget->GetSkillProgressBar_E()->SetPercent(1.f);
 
@@ -614,7 +617,7 @@ void AMyPlayer::Buff()
 
 		isOnBuff = true;
 
-		Stat->OnUseSkill(20);
+		Stat->OnUseSkill(20.f);
 
 		SkillWidget->GetSkillProgressBar_Q()->SetPercent(1.f);
 

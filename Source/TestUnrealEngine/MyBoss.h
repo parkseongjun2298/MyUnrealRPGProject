@@ -100,6 +100,9 @@ public:
 	UPROPERTY()
 		bool isBulletColCheck = false;
 
+
+	bool isGrogyCheck = false;
+
 	APlayerController* PlayerController;
 
 
