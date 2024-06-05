@@ -112,7 +112,7 @@ void ABullet::Tick(float DeltaTime)
 						//UE_LOG(LogTemp, Log, TEXT("bullet Hit Actor : %s"), *HitResult.Actor->GetName());
 						//플레이어가 방어할시 딜감하게 작업하기
 
-
+						PlayerPawn->Stat->OnUseSkill(-10.f);
 						HitResult.Actor->TakeDamage(10 / 2, DamageEvent, Control, this);
 
 						DestroyOBJ();

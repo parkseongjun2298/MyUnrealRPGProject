@@ -20,6 +20,12 @@ UBossAnimInstance::UBossAnimInstance()
 		AttackMontage2 = AM2.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM3(TEXT("AnimMontage'/Game/Animations/Boss_Skill2.Boss_Skill2'"));
+	if (AM3.Succeeded())
+	{
+		AttackMontage3 = AM3.Object;
+	}
+
 }
 
 void UBossAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -53,6 +59,11 @@ void UBossAnimInstance::PlayAttackMontage2()
 {
 	Montage_Play(AttackMontage2, 1.f);
 }
+void UBossAnimInstance::PlayAttackMontage3()
+{
+	Montage_Play(AttackMontage3, 1.f);
+}
+
 
 FName UBossAnimInstance::GetAttackMontageName(int32 SectionIndex)
 {
@@ -72,4 +83,9 @@ void UBossAnimInstance::AnimNotify_ReadyMove()
 void UBossAnimInstance::AnimNotify_CreateMeteor()
 {
 	OnCreateMeteor.Broadcast();
+}
+
+void UBossAnimInstance::AnimNotify_CreateShower()
+{
+	OnCreateShower.Broadcast();
 }

@@ -105,7 +105,7 @@ void AMyPlayer::BeginPlay()
 	//}
 
 	HUDWidget->BindCharacterStat(Stat);
-
+	HUDWidget->BindCharacterStatMP(Stat);
 
 	MiniMapWidget = Cast<UMiniMap>(CreateWidget(GetWorld(), HUDMiniMapClass));
 	MiniMapWidget->AddToViewport();
@@ -159,6 +159,7 @@ void AMyPlayer::PostInitializeComponents()
 void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 
 	if (isHit)
 	{
@@ -516,6 +517,7 @@ void AMyPlayer::OnSkill_Q_MontageEnded(UAnimMontage* Montage, bool bInterrupted)
 float AMyPlayer::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	Stat->OnAttacked(DamageAmount);
+	
 	isHit = true;
 	return DamageAmount;
 
@@ -531,7 +533,7 @@ void AMyPlayer::Skill_R()
 	
 
 
-	if (/*isAttackMode&&*/ isEquipWeapon && !bSkillRCooldown)
+	if (/*isAttackMode&&*/ isEquipWeapon && !bSkillRCooldown && Stat->GetMp()>20)
 	{
 		AnimInstance->PlaySkill_R_Montage();
 
@@ -549,7 +551,7 @@ void AMyPlayer::Skill_E()
 {
 	
 
-	if (/*isAttackMode&&*/ isEquipWeapon && !bSkillECooldown)
+	if (/*isAttackMode&&*/ isEquipWeapon && !bSkillECooldown && Stat->GetMp() > 10)
 	{
 		AnimInstance->PlaySkill_E_Montage();
 
@@ -607,7 +609,7 @@ void AMyPlayer::RunFin()
 void AMyPlayer::Buff()
 {
 
-	if (/*isAttackMode&&*/ isEquipWeapon && !bSkillQCooldown)
+	if (/*isAttackMode&&*/ isEquipWeapon && !bSkillQCooldown &&Stat->GetMp() >20)
 	{
 
 		bSkillQCooldown = true;

@@ -24,7 +24,7 @@ bool UBTDecorator_GunCanAttack::CalculateRawConditionValue(UBehaviorTreeComponen
 	if (Target == nullptr)
 		return false;
 
-
+	
 	return bResult && Target->GetDistanceTo(CurPawn) <= 700.f;
 	//bResult 가 true이며 타켓과의 거리가 700미만이어야함
 }

@@ -14,7 +14,7 @@
 #include"MyPlayer.h"
 #include "Kismet/GameplayStatics.h" // UGameplayStatics 헤더 파일을 인클루드
 #include"Bullet.h"
-
+#include"MyHpItem.h"
 #include"HitEffect.h"
 // Sets default values
 AMyGunCharacter::AMyGunCharacter()
@@ -106,13 +106,14 @@ void AMyGunCharacter::Tick(float DeltaTime)
 
 	if (Stat->GetHp() <= 0.f)
 	{
+		
 		Die();
 	}
 
 	if (IsHit)
 	{
 		FTimerHandle TimerHandle;
-		float Delay = 0.2f; // 2초 후에 제거
+		float Delay = 1.f;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyGunCharacter::SetHitfalse, Delay);
 	}
 
@@ -247,6 +248,9 @@ void AMyGunCharacter::CreateBullet()
 void AMyGunCharacter::Die()
 {
 	IsDie = true;
+
+	auto HPITEM = GetWorld()->SpawnActor<AMyHpItem>(GetActorLocation(), FRotator::ZeroRotator);
+
 	// 몬스터를 비활성화
 	SetActorEnableCollision(false);
 	//SetActorHiddenInGame(true);

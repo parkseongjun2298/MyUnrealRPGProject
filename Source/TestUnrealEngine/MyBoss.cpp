@@ -18,6 +18,9 @@
 #include"BossRock.h"
 #include"BossBlackHole.h"
 #include"HitEffect.h"
+#include"BossShower.h"
+
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMyBoss::AMyBoss()
@@ -55,6 +58,19 @@ AMyBoss::AMyBoss()
 	AIControllerClass = AMyAIBossController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> DecalMaterialFinder(TEXT("Material'/Game/ParagonGideon/FX/Materials/VolumeFog/NewMaterial.NewMaterial'"));
+	if (DecalMaterialFinder.Succeeded())
+	{
+		DecalMaterial = DecalMaterialFinder.Object;
+		
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to load decal material."));
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -78,9 +94,11 @@ void AMyBoss::PostInitializeComponents()
 	{
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyBoss::OnAttackMontageEnded);
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyBoss::OnAttackMontageEnded2);
+		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyBoss::OnAttackMontageEnded3);
 		AnimInstance->OnAttackHit.AddUObject(this, &AMyBoss::AttackCheck);
 		AnimInstance->OnReadyMove.AddUObject(this, &AMyBoss::ReadyMove);
 		AnimInstance->OnCreateMeteor.AddUObject(this, &AMyBoss::CreateMeteor);
+		AnimInstance->OnCreateShower.AddUObject(this, &AMyBoss::CreateShower);
 	}
 
 
@@ -118,7 +136,7 @@ void AMyBoss::Tick(float DeltaTime)
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyBoss::SetHitfalse, Delay);
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("IsGrogy 값: %s"), IsGrogy ? TEXT("true") : TEXT("false"));
+	//UE_LOG(LogTemp, Log, TEXT("IsGrogy 값: %s"), IsGrogy ? TEXT("true") : TEXT("false"));
 
 	
 	 PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
@@ -170,7 +188,7 @@ void AMyBoss::Attack()
 
 void AMyBoss::Attack2()
 {
-	if ( IsDie || IsHit || IsGrogy)
+	if ( IsDie  || IsGrogy)
 		return;
 
 	AnimInstance->PlayAttackMontage2();
@@ -185,6 +203,23 @@ void AMyBoss::Attack2()
 
 	IsAttacking = true;
 	IsAttackMontageChek2 = true;
+
+}
+
+void AMyBoss::Attack3()
+{
+	if (IsDie )
+		return;
+
+	AnimInstance->PlayAttackMontage3();
+
+	AttackIndex3 = 1;
+	IsAttacking = true;
+	IsAttackMontageChek3 = true;
+
+
+
+
 
 }
 
@@ -253,7 +288,7 @@ void AMyBoss::AttackCheck()
 						//hit effect
 
 						auto HitEffect = GetWorld()->SpawnActor<AHitEffect>(HitResult.Actor->GetActorLocation(), FRotator::ZeroRotator);
-
+						PlayerPawn->Stat->OnUseSkill(-10.f);
 					}
 					else
 					{
@@ -321,6 +356,36 @@ void AMyBoss::CreateMeteor()
 	}
 }
 
+void AMyBoss::CreateShower()
+{
+
+	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0); // 플레이어 컨트롤러를 얻음
+	if (PlayerController)
+	{
+		APawn* PlayerPawn = PlayerController->GetPawn(); // 플레이어 캐릭터를 얻음
+		
+		auto BlackHole = GetWorld()->SpawnActor<ABossShower>(PlayerPawn->GetActorLocation() + GetActorUpVector() * 500, FRotator::ZeroRotator);
+		if (BlackHole)
+		{
+			// 방향 벡터 전달
+			FVector DirectionVector = GetActorUpVector();
+			FRotator Rot = GetActorRotation();
+			BlackHole->InitializeWithDirection(DirectionVector, Rot, GetController());
+
+
+			FVector DecalSize = FVector(128, 128, 128); // Adjust the size as needed
+			 UGameplayStatics::SpawnDecalAtLocation(this, DecalMaterial, DecalSize, PlayerPawn->GetActorLocation(), FRotator(0.f, -90.f, 0.f), 4.f);
+			
+		}
+
+
+
+
+	}
+
+	
+}
+
 void AMyBoss::Die()
 {
 	
@@ -358,6 +423,14 @@ void AMyBoss::OnAttackMontageEnded2(UAnimMontage* Montage, bool bInterrupted)
 	OnAttackEnd2.Broadcast();//공격 전파 
 }
 
+void AMyBoss::OnAttackMontageEnded3(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsAttacking = false;
+	IsAttackMontageChek3 = false;
+
+	OnAttackEnd3.Broadcast();//공격 전파 
+}
+
 float AMyBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	IsHit = true;
@@ -368,5 +441,26 @@ float AMyBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 void AMyBoss::SetHitfalse()
 {
 	IsGrogy = false;
+}
+
+void AMyBoss::SpawnDecal(USceneComponent* AttachToComponent,FVector Location, FRotator Rotation)
+{
+	if (DecalMaterial)
+	{
+		FVector DecalSize = FVector(50.0f, 50.0f, 50.0f); // Adjust the size as needed
+		float LifeSpan = 2.0f; // The decal will disappear after 10 seconds
+
+		UGameplayStatics::SpawnDecalAttached(
+			DecalMaterial,        // The decal material
+			DecalSize,                  // The size of the decal
+			AttachToComponent,          // The component to attach to
+			NAME_None,                  // Attach socket name (optional)
+			Location,                   // Location relative to the component
+			Rotation,                   // Rotation relative to the component
+			EAttachLocation::KeepRelativeOffset, // How to interpret the location and rotation
+			LifeSpan
+		);
+	}
+	
 }
 

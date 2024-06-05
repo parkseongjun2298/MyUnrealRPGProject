@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);//델리게이트쓰면 F 를 앞에붙여야함
 DECLARE_MULTICAST_DELEGATE(FOnAttackEnd2);//델리게이트쓰면 F 를 앞에붙여야함
+DECLARE_MULTICAST_DELEGATE(FOnAttackEnd3);//델리게이트쓰면 F 를 앞에붙여야함
 UCLASS()
 class TESTUNREALENGINE_API AMyBoss : public ACharacter
 {
@@ -32,11 +33,14 @@ public:
 
 	void Attack();
 	void Attack2();
+	void Attack3();
 	void AttackCheck();
 	void ReadyMove();
 	void CreateMeteor();
+	void CreateShower();
 	FOnAttackEnd OnAttackEnd;
 	FOnAttackEnd2 OnAttackEnd2;
+	FOnAttackEnd3 OnAttackEnd3;
 	void Die();
 	void DestroyMonster();
 
@@ -44,12 +48,17 @@ public:
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
 		void OnAttackMontageEnded2(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+		void OnAttackMontageEnded3(UAnimMontage* Montage, bool bInterrupted);
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void SetHitfalse();
 
 	void SetBulletColCheck() { isBulletColCheck = true; }
 	bool GetIsHit() { return IsHit; }
 	bool GetIsGrogy() { return IsGrogy; }
+
+
+	void SpawnDecal(USceneComponent* AttachToComponent,FVector Location, FRotator Rotation);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Pawn)
@@ -62,6 +71,9 @@ private:
 		bool IsMontageChek = false;
 	UPROPERTY(VisibleAnywhere, Category = Pawn)
 		bool IsAttackMontageChek2 = false;
+	UPROPERTY(VisibleAnywhere, Category = Pawn)
+		bool IsAttackMontageChek3 = false;
+	
 
 	UPROPERTY()
 		class UBossAnimInstance* AnimInstance;
@@ -70,6 +82,9 @@ private:
 		int32 AttackIndex = 0;
 	UPROPERTY()
 		int32 AttackIndex2 = 0;
+
+	UPROPERTY()
+		int32 AttackIndex3 = 0;
 
 public:
 
@@ -112,6 +127,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 		class UMyBossWidget* HUDWidget;
+
+	// Decal material
+	UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	UMaterialInterface* DecalMaterial;
 
 	FVector TargetPos;
 

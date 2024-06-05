@@ -14,7 +14,7 @@
 #include"MyPlayer.h"
 #include "GameFramework/PlayerController.h" // APlayerController 헤더 파일을 인클루드
 #include "Kismet/GameplayStatics.h" // UGameplayStatics 헤더 파일을 인클루드
-
+#include"MyHpItem.h"
 #include"HitEffect.h"
 
 // Sets default values
@@ -105,13 +105,14 @@ void AMyCharacter::Tick(float DeltaTime)
 
 	if (Stat->GetHp() <= 0.f)
 	{
+	
 		Die();
 	}
 
 	if (IsHit)
 	{
 		FTimerHandle TimerHandle;
-		float Delay = 0.5f; // 2초 후에 제거
+		float Delay = 1.f; // 2초 후에 제거
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyCharacter::SetHitfalse, Delay);
 	}
 }
@@ -204,7 +205,7 @@ void AMyCharacter::AttackCheck()
 
 						HitResult.Actor->TakeDamage(Stat->GetAttack() / 2, DamageEvent, GetController(), this);
 						//hit effect
-
+						PlayerPawn->Stat->OnUseSkill(-10.f);
 						auto HitEffect = GetWorld()->SpawnActor<AHitEffect>(HitResult.Actor->GetActorLocation(), FRotator::ZeroRotator);
 
 					}
@@ -261,6 +262,9 @@ void AMyCharacter::Die()
 {
 
 	IsDie = true;
+	auto HPITEM = GetWorld()->SpawnActor<AMyHpItem>(GetActorLocation() , FRotator::ZeroRotator);
+	
+
 	// 몬스터를 비활성화
 	SetActorEnableCollision(false);
 	//SetActorHiddenInGame(true);

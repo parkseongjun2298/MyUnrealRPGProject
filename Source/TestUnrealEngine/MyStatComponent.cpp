@@ -73,14 +73,25 @@ void UMyStatComponent::SetHp(int32 NewHp)
 	Hp = NewHp;
 	if (Hp < 0)
 		Hp = 0;
+
+	if (Hp >= 100)
+		Hp = 100;
 	OnHpChanged.Broadcast();
 
 }
 void UMyStatComponent::SetMp(int32 NewMp)
 {
+
+	
+
 	Mp = NewMp;
+
 	if (Mp < 0)
 		Mp = 0;
+
+	if (Mp >= 100)
+		Mp = 100;
+	
 	OnMpChanged.Broadcast();
 
 }

@@ -28,7 +28,7 @@ EBTNodeResult::Type UBTTAST_FindRandomPos::ExecuteTask(UBehaviorTreeComponent& O
 	if (Navsystem == nullptr)
 		return  EBTNodeResult::Failed;
 	FNavLocation RandomLocation;
-	if (Navsystem->GetRandomPointInNavigableRadius(FVector::ZeroVector, 500.f, RandomLocation))
+	if (Navsystem->GetRandomPointInNavigableRadius(CurPawn->GetActorLocation(), 500.f, RandomLocation))
 
 	{
 		//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, RandomLocation);

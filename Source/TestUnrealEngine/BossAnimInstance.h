@@ -12,6 +12,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnAttackHit);
 DECLARE_MULTICAST_DELEGATE(FOnReadyMove);
 DECLARE_MULTICAST_DELEGATE(FOnCreateMeteor);
+DECLARE_MULTICAST_DELEGATE(FOnCreateShower);
 
 UCLASS()
 class TESTUNREALENGINE_API UBossAnimInstance : public UAnimInstance
@@ -24,6 +25,7 @@ public:
 
 	void PlayAttackMontage();
 	void PlayAttackMontage2();
+	void PlayAttackMontage3();
 
 	FName GetAttackMontageName(int32 SectionIndex);
 
@@ -34,6 +36,8 @@ private:
 		void AnimNotify_ReadyMove();
 	UFUNCTION()
 		void AnimNotify_CreateMeteor();
+	UFUNCTION()
+		void AnimNotify_CreateShower();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		float Speed;
@@ -44,6 +48,9 @@ private:
 		UAnimMontage* AttackMontage;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* AttackMontage2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackMontage3;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
@@ -64,4 +71,5 @@ public:
 	FOnAttackHit OnAttackHit;
 	FOnReadyMove OnReadyMove;
 	FOnCreateMeteor OnCreateMeteor;
+	FOnCreateShower OnCreateShower;
 };
